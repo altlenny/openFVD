@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="metal.png">metal.png</file>
+        <file alias="background.png">background.png</file>
+        <file alias="negx.jpg">sky/negx.jpg</file>
+        <file alias="negy.jpg">sky/negy.jpg</file>
+        <file alias="negz.jpg">sky/negz.jpg</file>
+        <file alias="posx.jpg">sky/posx.jpg</file>
+        <file alias="posy.jpg">sky/posy.jpg</file>
+        <file alias="posz.jpg">sky/posz.jpg</file>
+        <file>shaders/debug.frag</file>
+        <file>shaders/debug.vert</file>
+        <file>shaders/floor.frag</file>
+        <file>shaders/floor.vert</file>
+        <file>shaders/normals.frag</file>
+        <file>shaders/normals.vert</file>
+        <file>shaders/occlusion.frag</file>
+        <file>shaders/occlusion.vert</file>
+        <file>shaders/oculus.frag</file>
+        <file>shaders/oculus.vert</file>
+        <file>shaders/shadowVolume.frag</file>
+        <file>shaders/shadowVolume.vert</file>
+        <file>shaders/simpleSM.frag</file>
+        <file>shaders/simpleSM.vert</file>
+        <file>shaders/sky.frag</file>
+        <file>shaders/sky.vert</file>
+        <file>shaders/track.frag</file>
+        <file>shaders/track.vert</file>
+    </qresource>
+</RCC>
