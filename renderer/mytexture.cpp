@@ -17,6 +17,7 @@
 */
 
 #include "mytexture.h"
+#include <QFile>
 
 QList<bool> myTexture::usedIDs;
 
@@ -102,29 +103,29 @@ myTexture::myTexture(const char *_negx, const char *_negy, const char *_negz, co
 
     QImage tex, texture;
 
-    tex.load(_negz);
-    texture = tex.convertToFormat(QImage::Format_RGB888);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, texture.bits());
+    lenAssert(tex.load(_negz));
+    texture = QGLWidget::convertToGLFormat(tex);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.bits());
 
-    tex.load(_posz);
-    texture = tex.convertToFormat(QImage::Format_RGB888);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, texture.bits());
+    lenAssert(tex.load(_posz));
+    texture = QGLWidget::convertToGLFormat(tex);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.bits());
 
-    tex.load(_negy);
-    texture = tex.convertToFormat(QImage::Format_RGB888);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, texture.bits());
+    lenAssert(tex.load(_negy));
+    texture = QGLWidget::convertToGLFormat(tex);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.bits());
 
-    tex.load(_posy);
-    texture = tex.convertToFormat(QImage::Format_RGB888);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, texture.bits());
+    lenAssert(tex.load(_posy));
+    texture = QGLWidget::convertToGLFormat(tex);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.bits());
 
-    tex.load(_posx);
-    texture = tex.convertToFormat(QImage::Format_RGB888);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, texture.bits());
+    lenAssert(tex.load(_posx));
+    texture = QGLWidget::convertToGLFormat(tex);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.bits());
 
-    tex.load(_negx);
-    texture = tex.convertToFormat(QImage::Format_RGB888);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, texture.bits());
+    lenAssert(tex.load(_negx));
+    texture = QGLWidget::convertToGLFormat(tex);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA, texture.width(), texture.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.bits());
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
