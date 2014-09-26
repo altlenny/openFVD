@@ -1199,7 +1199,7 @@ void trackWidget::on_pitchChangeBox_valueChanged(double arg1)
 
     float temp = cos(fabs(anchor->getPitch())*F_PI/180.f);
     float forceAngle = sqrt(temp*temp*anchor->fYawFromLast*anchor->fYawFromLast + anchor->fPitchFromLast*anchor->fPitchFromLast);//deltaAngle;
-    float dirFromLast = glm::atan(anchor->fYawFromLast, anchor->fPitchFromLast)*180.f/F_PI - anchor->fRoll;
+    float dirFromLast = glm::atan(anchor->fYawFromLast, anchor->fPitchFromLast) - TO_RAD(anchor->fRoll);
 
     glm::vec3 forceVec;
     if(fabs(forceAngle) < std::numeric_limits<float>::epsilon()) {
@@ -1238,7 +1238,7 @@ void trackWidget::on_yawChangeBox_valueChanged(double arg1)
 
     float temp = cos(fabs(anchor->getPitch())*F_PI/180.f);
     float forceAngle = sqrt(temp*temp*anchor->fYawFromLast*anchor->fYawFromLast + anchor->fPitchFromLast*anchor->fPitchFromLast);//deltaAngle;
-    float dirFromLast = glm::atan(anchor->fYawFromLast, anchor->fPitchFromLast)*180.f/F_PI - anchor->fRoll;
+    float dirFromLast = glm::atan(anchor->fYawFromLast, anchor->fPitchFromLast) - TO_RAD(anchor->fRoll);
 
     glm::vec3 forceVec;
     if(fabs(forceAngle) < std::numeric_limits<float>::epsilon()) {

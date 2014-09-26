@@ -26,6 +26,17 @@
 #define F_PI_2 (1.570796326794896f)
 #define F_PI_4 (0.785398163397448f)
 
+#define F_DEG (57.29577951308232f)
+#define F_RAD (0.0174532925199432958f)
+
+#define TO_RAD(angle) ((angle)*F_RAD)
+#define TO_DEG(angle) ((angle)*F_DEG)
+
+
+#define GLM_FORCE_RADIANS
+#include "glm/glm.hpp"
+#include "glm/ext.hpp"
+
 #ifdef QT_NO_DEBUG
     #define lenAssert(c) if(!(c)) qCritical("Assertion '%s' in %s line %d failed.", #c, __FILE__, __LINE__);
 #else

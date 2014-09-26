@@ -120,8 +120,8 @@ int seccurved::updateSection(int)
 
         float fPureDirection = fDirection - artificialRoll; //- curNode->fRoll;
 
-        curNode->vDir = glm::angleAxis(deltaAngle, (float)glm::cos(-fPureDirection*F_PI/180) * prevNode->vLat  + (float)glm::sin(-fPureDirection*F_PI/180) * prevNode->vNorm)*prevNode->vDir;
-        curNode->vLat = glm::angleAxis(deltaAngle, (float)glm::cos(-fPureDirection*F_PI/180) * prevNode->vLat  + (float)glm::sin(-fPureDirection*F_PI/180) * prevNode->vNorm)*prevNode->vLat;
+        curNode->vDir = glm::angleAxis(TO_RAD(deltaAngle), (float)glm::cos(-fPureDirection*F_PI/180) * prevNode->vLat  + (float)glm::sin(-fPureDirection*F_PI/180) * prevNode->vNorm)*prevNode->vDir;
+        curNode->vLat = glm::angleAxis(TO_RAD(deltaAngle), (float)glm::cos(-fPureDirection*F_PI/180) * prevNode->vLat  + (float)glm::sin(-fPureDirection*F_PI/180) * prevNode->vNorm)*prevNode->vLat;
         curNode->vDir = glm::normalize(curNode->vDir);
         curNode->vLat = glm::normalize(curNode->vLat);
 

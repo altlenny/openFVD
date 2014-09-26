@@ -23,16 +23,16 @@
 
 using namespace std;
 
-saver::saver(QString fileName, projectWidget* _project, QMainWindow* _parent)
+saver::saver(const QString& fileName, projectWidget* _project, QMainWindow* _parent)
 {
-    sFileName = fileName.toLocal8Bit().data();
+    sFileName = fileName;
     project = _project;
     parent = _parent;
 }
 
 QString saver::doSave()
 {
-    fstream fout(this->sFileName, ios::out | ios::binary);
+    fstream fout(sFileName.toLocal8Bit().data(), ios::out | ios::binary);
     if(fout == NULL) {
         return QString("Error: File is NULL");
     }
@@ -45,7 +45,7 @@ QString saver::doSave()
 
 QString saver::doLoad()
 {
-    fstream fin(this->sFileName, ios::in | ios::binary);
+    fstream fin(sFileName.toLocal8Bit().data(), ios::in | ios::binary);
     if(fin == NULL) {
         return QString("Error: File is NULL");
     }

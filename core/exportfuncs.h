@@ -22,10 +22,6 @@
 
 #include <fstream>
 #include <sstream>
-
-//#define GLM_FORCE_SSE2
-#include "glm/glm.hpp"
-
 #include "mnode.h"
 
 void writeBytes(std::fstream *file, const char* data, size_t length );

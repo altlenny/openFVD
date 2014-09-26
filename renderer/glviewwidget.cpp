@@ -198,7 +198,7 @@ void glViewWidget::drawTrack(trackHandler *_track, bool toNormalMap)
     trackMesh* mesh = _track->mMesh;
     track* myTrack = _track->trackData;
 
-    glm::mat4 anchorBase = glm::translate(myTrack->startPos) * glm::rotate(myTrack->startYaw-90, glm::vec3(0.f, 1.f, 0.f));
+    glm::mat4 anchorBase = glm::translate(myTrack->startPos) * glm::rotate(TO_RAD(myTrack->startYaw-90.f), glm::vec3(0.f, 1.f, 0.f));
 
     shader->bind();
     shader->useUniform("projectionMatrix", &ProjectionMatrix);
@@ -285,7 +285,7 @@ void glViewWidget::drawSimpleSM(trackHandler *_track)
     trackMesh* mesh = _track->mMesh;
     track* myTrack = _track->trackData;
 
-    glm::mat4 anchorBase = glm::translate(myTrack->startPos) * glm::rotate(myTrack->startYaw-90, glm::vec3(0.f, 1.f, 0.f));
+    glm::mat4 anchorBase = glm::translate(myTrack->startPos) * glm::rotate(TO_RAD(myTrack->startYaw-90.f), glm::vec3(0.f, 1.f, 0.f));
 
     if(shadowMode == 0) simpleShadowFb->bind();
     else
@@ -379,7 +379,7 @@ void glViewWidget::drawShadowVolumes()
         {
             trackMesh* mesh = trackList[i]->mMesh;
             track* myTrack = trackList[i]->trackData;
-            anchorBase = glm::translate(myTrack->startPos) * glm::rotate(myTrack->startYaw-90, glm::vec3(0.f, 1.f, 0.f));
+            anchorBase = glm::translate(myTrack->startPos) * glm::rotate(TO_RAD(myTrack->startYaw-90.f), glm::vec3(0.f, 1.f, 0.f));
             shadowVolumeShader->useUniform("anchorBase", &anchorBase);
             if(myTrack->drawHeartline != 2 && myTrack->lSections.size()!=0)
             {
@@ -437,7 +437,7 @@ void glViewWidget::drawShadowVolumes()
         {
             trackMesh* mesh = trackList[i]->mMesh;
             track* myTrack = trackList[i]->trackData;
-            anchorBase = glm::translate(myTrack->startPos) * glm::rotate(myTrack->startYaw-90, glm::vec3(0.f, 1.f, 0.f));
+            anchorBase = glm::translate(myTrack->startPos) * glm::rotate(TO_RAD(myTrack->startYaw-90.f), glm::vec3(0.f, 1.f, 0.f));
             shadowVolumeShader->useUniform("anchorBase", &anchorBase);
             glBindVertexArray(mesh->HeartObject[1]);
             glDrawElements(GL_TRIANGLES, mesh->shadowIndices.size(), GL_UNSIGNED_INT, (GLvoid*)0);
@@ -682,7 +682,7 @@ void glViewWidget::paintGL()
         }
         else
         {
-            glm::mat4 anchorBase = glm::translate(gloParent->curTrack()->startPos) * glm::rotate(gloParent->curTrack()->startYaw-90, glm::vec3(0.f, 1.f, 0.f));
+            glm::mat4 anchorBase = glm::translate(gloParent->curTrack()->startPos) * glm::rotate(TO_RAD(gloParent->curTrack()->startYaw-90.f), glm::vec3(0.f, 1.f, 0.f));
             glm::vec3 vNormal = glm::vec3(anchorBase * glm::vec4(-povNode->vNorm, 0.f));
             glm::vec3 vLookAt = glm::vec3(anchorBase * glm::vec4(povNode->vPos+povNode->vDirHeart(gloParent->curTrack()->fHeart), 1.f));
             glm::vec3 vPosition = glm::vec3(anchorBase * glm::vec4(povNode->vPos, 1.f));
@@ -951,9 +951,9 @@ void glViewWidget::mouseMoveEvent(QMouseEvent *event)
         }
         if(!povMode)
         {
-            freeFlyDir = glm::angleAxis(rotateX, sign*glm::vec3(0, 1, 0))*freeFlyDir;
-            freeFlySide = glm::angleAxis(rotateX, sign*glm::vec3(0, 1, 0))*freeFlySide;
-            freeFlyDir = glm::angleAxis(rotateY, freeFlySide)*freeFlyDir;
+            freeFlyDir = glm::angleAxis(TO_RAD(rotateX), sign*glm::vec3(0, 1, 0))*freeFlyDir;
+            freeFlySide = glm::angleAxis(TO_RAD(rotateX), sign*glm::vec3(0, 1, 0))*freeFlySide;
+            freeFlyDir = glm::angleAxis(TO_RAD(rotateY), freeFlySide)*freeFlyDir;
             //freeFlyDir = glm::vec3(glm::rotate(, glm::cross(freeFlyDir, glm::vec3(0.f, 1.f, 0.f))) * glm::vec4(freeFlyDir, 0.f));
         }
         moveMode = false;
@@ -1194,7 +1194,7 @@ void glViewWidget::initTextures()
     skyTexture = new myTexture(":/negx.jpg", ":/negy.jpg", ":/negz.jpg", ":/posx.jpg", ":/posy.jpg", ":/posz.jpg");
 #endif
 #ifdef Q_OS_WIN32
-    skyTexture = new myTexture(":/sky/negx.png", ":/sky/negy.png", ":/sky/negz.png", ":/sky/posx.png", ":/sky/posy.png", ":/sky/posz.png");
+    skyTexture = new myTexture(":/sky/negx.jpg", ":/sky/negy.jpg", ":/sky/negz.jpg", ":/sky/posx.jpg", ":/sky/posy.jpg", ":/sky/posz.jpg");
 #endif
 #ifdef Q_OS_MAC
     skyTexture = new myTexture(":/sky/negx.png", ":/sky/negy.png", ":/sky/negz.png", ":/sky/posx.png", ":/sky/posy.png", ":/sky/posz.png");
@@ -1209,7 +1209,7 @@ void glViewWidget::initShaders()
     floorShader = new myShader(":/shaders/floor.vert", ":/shaders/floor.frag");
 #endif
 #ifdef Q_OS_WIN32
-    floorShader = new myShader(":/floor.vert", ":/floor.frag");
+    floorShader = new myShader(":/shaders/floor.vert", ":/shaders/floor.frag");
 #endif
 #ifdef Q_OS_MAC
     floorShader = new myShader(":/floor.vert", ":/floor.frag");
@@ -1222,7 +1222,7 @@ void glViewWidget::initShaders()
     skyShader = new myShader(":/shaders/sky.vert", ":/shaders/sky.frag");
 #endif
 #ifdef Q_OS_WIN32
-    skyShader = new myShader(":/sky.vert", ":/sky.frag");
+    skyShader = new myShader(":/shaders/sky.vert", ":/shaders/sky.frag");
 #endif
 #ifdef Q_OS_MAC
     skyShader = new myShader(":/sky.vert", ":/sky.frag");
@@ -1234,7 +1234,7 @@ void glViewWidget::initShaders()
     trackShader = new myShader(":/shaders/track.vert", ":/shaders/track.frag");
 #endif
 #ifdef Q_OS_WIN32
-    trackShader = new myShader(":/track.vert", ":/track.frag");
+    trackShader = new myShader(":/shaders/track.vert", ":/shaders/track.frag");
 #endif
 #ifdef Q_OS_MAC
     trackShader = new myShader(":/track.vert", ":/track.frag");
@@ -1256,7 +1256,7 @@ void glViewWidget::initShaders()
     simpleSMShader = new myShader(":/shaders/simpleSM.vert", ":/shaders/simpleSM.frag");
 #endif
 #ifdef Q_OS_WIN32
-    simpleSMShader = new myShader(":/simpleSM.vert", ":/simpleSM.frag");
+    simpleSMShader = new myShader(":/shaders/simpleSM.vert", ":/shaders/simpleSM.frag");
 #endif
 #ifdef Q_OS_MAC
     simpleSMShader = new myShader(":/simpleSM.vert", ":/simpleSM.frag");
@@ -1272,7 +1272,7 @@ void glViewWidget::initShaders()
     shadowVolumeShader = new myShader(":/shaders/shadowVolume.vert", ":/shaders/shadowVolume.frag");
 #endif
 #ifdef Q_OS_WIN32
-    shadowVolumeShader = new myShader(":/shadowVolume.vert", ":/shadowVolume.frag");
+    shadowVolumeShader = new myShader(":/shaders/shadowVolume.vert", ":/shaders/shadowVolume.frag");
 #endif
 #ifdef Q_OS_MAC
     shadowVolumeShader = new myShader(":/shadowVolume.vert", ":/shadowVolume.frag");
@@ -1288,7 +1288,7 @@ void glViewWidget::initShaders()
     normalMapShader = new myShader(":/shaders/normals.vert", ":/shaders/normals.frag");
 #endif
 #ifdef Q_OS_WIN32
-    normalMapShader = new myShader(":/normals.vert", ":/normals.frag");
+    normalMapShader = new myShader(":/shaders/normals.vert", ":/shaders/normals.frag");
 #endif
 #ifdef Q_OS_MAC
     normalMapShader = new myShader(":/normals.vert", ":/normals.frag");
@@ -1308,7 +1308,7 @@ void glViewWidget::initShaders()
     occlusionShader = new myShader(":/shaders/occlusion.vert", ":/shaders/occlusion.frag");
 #endif
 #ifdef Q_OS_WIN32
-    occlusionShader = new myShader(":/occlusion.vert", ":/occlusion.frag");
+    occlusionShader = new myShader(":/shaders/occlusion.vert", ":/shaders/occlusion.frag");
 #endif
 #ifdef Q_OS_MAC
     occlusionShader = new myShader(":/occlusion.vert", ":/occlusion.frag");
@@ -1321,7 +1321,7 @@ void glViewWidget::initShaders()
     debugShader = new myShader(":/shaders/debug.vert", ":/shaders/debug.frag");
 #endif
 #ifdef Q_OS_WIN32
-    debugShader = new myShader(":/debug.vert", ":/debug.frag");
+    debugShader = new myShader(":/shaders/debug.vert", ":/shaders/debug.frag");
 #endif
 #ifdef Q_OS_MAC
     debugShader = new myShader(":/debug.vert", ":/debug.frag");
@@ -1418,16 +1418,16 @@ void glViewWidget::buildMatrices(float offset)
     }
     if(povMode)
     {
-        anchorBase = glm::translate(gloParent->curTrack()->startPos) * glm::rotate(gloParent->curTrack()->startYaw-90, glm::vec3(0.f, 1.f, 0.f));
+        anchorBase = glm::translate(gloParent->curTrack()->startPos) * glm::rotate(TO_RAD(gloParent->curTrack()->startYaw-90.f), glm::vec3(0.f, 1.f, 0.f));
         glm::vec3 pos = povNode->vRelPos(gloParent->curTrack()->povPos.y, gloParent->curTrack()->povPos.x);
         glm::vec3 direction = povNode->vDirHeart(gloParent->curTrack()->fHeart);
         glm::vec3 front = direction;
         glm::vec3 side = povNode->vLatHeart(gloParent->curTrack()->fHeart);
         glm::vec3 down = glm::cross(front, side);
-        direction = glm::angleAxis((float)(-headPos.z*180.f/F_PI), down) * glm::angleAxis((float)(headPos.y*180.f/F_PI), side) * direction;
-        side = glm::angleAxis((float)(-headPos.z*180.f/F_PI), down) * side;
+        direction = glm::angleAxis((float)(-headPos.z), down) * glm::angleAxis((float)(headPos.y*180.f/F_PI), side) * direction;
+        side = glm::angleAxis((float)(-headPos.z), down) * side;
         down = glm::cross(direction, side);
-        down = glm::angleAxis((float)(-headPos.x*180.f/F_PI), direction) * down;
+        down = glm::angleAxis((float)(-headPos.x), direction) * down;
 
         ModelMatrix = glm::lookAt(glm::vec3(anchorBase * glm::vec4(pos, 1.f)), glm::vec3(anchorBase * glm::vec4(pos+direction, 1.f)), -glm::vec3(anchorBase * glm::vec4(down, 0.f)));
         cameraPos = glm::vec3(anchorBase * glm::vec4(pos, 1.f));
@@ -1490,7 +1490,7 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
     if(_track->trackData->drawHeartline == 2) return;
 
     track* myTrack = _track->trackData;
-    glm::mat4 anchorBase = glm::translate(myTrack->startPos) * glm::rotate(myTrack->startYaw-90, glm::vec3(0.f, 1.f, 0.f));
+    glm::mat4 anchorBase = glm::translate(myTrack->startPos) * glm::rotate(TO_RAD(myTrack->startYaw-90.f), glm::vec3(0.f, 1.f, 0.f));
     glm::vec4 curPos;
 
     float meshQuality;

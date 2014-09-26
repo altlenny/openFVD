@@ -20,8 +20,6 @@
 #include "exportfuncs.h"
 #include <cmath>
 
-//#define GLM_FORCE_SSE2
-#include "glm/glm.hpp"
 #include "track.h"
 
 

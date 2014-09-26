@@ -22,9 +22,6 @@
 #include "secbezier.h"
 #include "trackwidget.h"
 
-//#define GLM_FORCE_SSE2
-#include "glm/glm.hpp"
-
 using namespace std;
 
 noLimitsImporter::noLimitsImporter(trackHandler* _track, QString _fileName)

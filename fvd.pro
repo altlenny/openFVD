@@ -135,10 +135,20 @@ FORMS    += ui/transitionwidget.ui \
     ui/conversionpanel.ui
 
 win32 {
+    INCLUDEPATH += "./ui/"
+    INCLUDEPATH += "./renderer/"
+    INCLUDEPATH += "./core/"
+
+    INCLUDEPATH += "C:\Libraries\glew-1.11.0\include" # path-to-glew/include
+    INCLUDEPATH += "C:\Libraries\glm" #path-to-glm"
+    INCLUDEPATH += "C:\Libraries\lib3ds-20080909\src" #path-to-lib3ds
+
     RC_FILE = winicon.rc
 
     LIBS += -lOpenGL32
     LIBS += -lGlU32
+    LIBS += "C:\Libraries\glew-1.11.0\lib\Release\Win32\glew32.lib" #path-to-glew\lib\Release\Win32\glew32.lib
+    LIBS += "C:\Libraries\glew-1.11.0\bin\Release\Win32\glew32.dll" #path-to-glew\bin\Release\Win32\glew32.dll
 }
 
 unix:!macx {

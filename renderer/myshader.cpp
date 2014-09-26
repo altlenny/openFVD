@@ -24,10 +24,11 @@ myShader::myShader(const char* _vertex, const char* _fragment)
 {
     QFile vertex(_vertex);
     vertex.open(QIODevice::ReadOnly);
-    QString v;
-    v.append(vertex.readAll());
+    lenAssert(vertex.isReadable());
+    QString v = vertex.readAll();
     QFile fragment(_fragment);
     fragment.open(QIODevice::ReadOnly);
+    lenAssert(fragment.isReadable());
     QString f = fragment.readAll();
     sources[0] = glCreateShader(GL_VERTEX_SHADER);
     sources[1] = glCreateShader(GL_FRAGMENT_SHADER);

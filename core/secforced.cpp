@@ -116,12 +116,12 @@ int secforced::updateSection(int node)
         curNode->forceNormal = normForce->getValue((i+1)/F_HZ);
         curNode->forceLateral = latForce->getValue((i+1)/F_HZ);
 
-        float nForce = - glm::dot(forceVec, glm::normalize(prevNode->vNorm))*9.80665;
-        float lForce = - glm::dot(forceVec, glm::normalize(prevNode->vLat))*9.80665*180/F_PI;
+        float nForce = - glm::dot(forceVec, glm::normalize(prevNode->vNorm))*9.80665f;
+        float lForce = - glm::dot(forceVec, glm::normalize(prevNode->vLat))*9.80665f;
 
         float estVel = fabs(prevNode->fHeartDistFromLast) < std::numeric_limits<float>::epsilon() ? prevNode->fVel : prevNode->fHeartDistFromLast*F_HZ;
 
-        curNode->vDir = glm::normalize(glm::angleAxis((float)((nForce/F_HZ/estVel)*180/F_PI), prevNode->vLat) * glm::angleAxis(-lForce/prevNode->fVel/F_HZ, prevNode->vNorm) * prevNode->vDir);
+        curNode->vDir = glm::normalize(glm::angleAxis(nForce/F_HZ/estVel, prevNode->vLat) * glm::angleAxis(-lForce/prevNode->fVel/F_HZ, prevNode->vNorm) * prevNode->vDir);
         curNode->vLat = glm::normalize(glm::angleAxis(-lForce/prevNode->fVel/F_HZ, prevNode->vNorm) * prevNode->vLat);
 
         curNode->updateNorm();
@@ -260,7 +260,7 @@ int secforced::updateDistanceSection(int node)
 
         float estVel = fabs(prevNode->fHeartDistFromLast) < std::numeric_limits<float>::epsilon() ? prevNode->fVel : prevNode->fHeartDistFromLast*F_HZ;
 
-        curNode->vDir = glm::normalize(glm::angleAxis((float)((nForce/F_HZ/estVel)*180/F_PI), prevNode->vLat) * glm::angleAxis(-lForce/prevNode->fVel/F_HZ, prevNode->vNorm) * prevNode->vDir);
+        curNode->vDir = glm::normalize(glm::angleAxis(nForce/F_HZ/estVel, prevNode->vLat) * glm::angleAxis(-lForce/prevNode->fVel/F_HZ, prevNode->vNorm) * prevNode->vDir);
         curNode->vLat = glm::normalize(glm::angleAxis(-lForce/prevNode->fVel/F_HZ, prevNode->vNorm) * prevNode->vLat);
 
         curNode->updateNorm();

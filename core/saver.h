@@ -29,13 +29,13 @@ class QMainWindow;
 class saver
 {
 public:
-    saver(QString fileName, projectWidget* _project, QMainWindow *_parent);
+    saver(const QString& fileName, projectWidget* _project, QMainWindow *_parent);
     QString doSave();
     QString doLoad();
 
     track* saveTo;
     projectWidget* project;
-    char* sFileName;
+    QString sFileName;
     QMainWindow *parent;
 };
 

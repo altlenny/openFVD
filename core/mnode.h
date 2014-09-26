@@ -22,11 +22,6 @@
 #include <QList>
 #include <sstream>
 #include <fstream>
-
-//#define GLM_FORCE_SSE2
-#include "glm/glm.hpp"
-#include "glm/ext.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 #include "lenassert.h"
 
 #define F_HZ (1000.f)

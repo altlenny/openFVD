@@ -35,10 +35,9 @@ void dragLabel::mousePressEvent(QMouseEvent *event)
     return;
 }
 
-void dragLabel::mouseReleaseEvent(QMouseEvent *event)
+void dragLabel::mouseReleaseEvent(QMouseEvent *)
 {
     isDragged = false;
-
 }
 
 void dragLabel::mouseMoveEvent(QMouseEvent *event)

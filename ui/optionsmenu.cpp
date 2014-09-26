@@ -56,7 +56,7 @@ optionsMenu::optionsMenu(QWidget *parent) :
 #ifdef Q_OS_MAC
         glPolicy = 1;
 #endif
-        meshQuality = 2;
+        meshQuality = 1;
         shadowQuality = 1;
         fov = 90.0;
         rollColor[0] = QColor(120, 0, 0, 255);

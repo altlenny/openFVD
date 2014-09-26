@@ -53,7 +53,7 @@ mnode::mnode(glm::vec3 getPos, glm::vec3 getDir, float getRoll, float getVel, fl
 
     if(this->vDir.y == 1)
     {
-        this->vLat = glm::vec3(glm::angleAxis(getRoll, glm::vec3(0.f, -1.f, 0.f))*glm::vec4(1.f, 0.f, 0.f, 0.f));
+        this->vLat = glm::vec3(glm::angleAxis(TO_RAD(getRoll), glm::vec3(0.f, -1.f, 0.f))*glm::vec4(1.f, 0.f, 0.f, 0.f));
     }
     else
     {
@@ -67,7 +67,7 @@ mnode::mnode(glm::vec3 getPos, glm::vec3 getDir, float getRoll, float getVel, fl
 
 void mnode::setRoll(float dRoll)
 {
-    vLat = glm::normalize(glm::angleAxis(-dRoll, vDir)*vLat);
+    vLat = glm::normalize(glm::angleAxis(TO_RAD(-dRoll), vDir)*vLat);
     this->updateRoll();
     return;
 }
@@ -103,15 +103,15 @@ void mnode::changePitch(float dAngle, bool inverted)
     if(inverted) {
         rotateAround *= -1.f;
     }
-    vDir = glm::normalize(glm::angleAxis(dAngle, rotateAround) * vDir);
-    vLat = glm::normalize(glm::angleAxis(dAngle, rotateAround) * vLat);
+    vDir = glm::normalize(glm::angleAxis(TO_RAD(dAngle), rotateAround) * vDir);
+    vLat = glm::normalize(glm::angleAxis(TO_RAD(dAngle), rotateAround) * vLat);
     updateNorm();
 }
 
 void mnode::changeYaw(float dAngle)
 {
-    vDir = glm::normalize(glm::angleAxis(dAngle, glm::vec3(0.f, 1.f, 0.f))*vDir);
-    vLat = glm::normalize(glm::angleAxis(dAngle, glm::vec3(0.f, 1.f, 0.f))*vLat);
+    vDir = glm::normalize(glm::angleAxis(TO_RAD(dAngle), glm::vec3(0.f, 1.f, 0.f))*vDir);
+    vLat = glm::normalize(glm::angleAxis(TO_RAD(dAngle), glm::vec3(0.f, 1.f, 0.f))*vLat);
     this->updateNorm();
 }
 

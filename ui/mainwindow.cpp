@@ -555,7 +555,7 @@ void MainWindow::updateInfoPanel(mnode* lastnode)
     }
 
     float heart = curTrack()->fHeart;
-    glm::mat4 anchorBase = glm::translate(curTrack()->startPos) * glm::rotate(curTrack()->startYaw-90, glm::vec3(0.f, 1.f, 0.f));
+    glm::mat4 anchorBase = glm::translate(curTrack()->startPos) * glm::rotate(TO_RAD(curTrack()->startYaw-90.f), glm::vec3(0.f, 1.f, 0.f));
 
     glm::vec3 worldPos = glm::vec3(anchorBase * glm::vec4(lastnode->vPosHeart(heart), 1.f));
 
