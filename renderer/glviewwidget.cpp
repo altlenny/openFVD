@@ -773,6 +773,9 @@ void glViewWidget::initializeGL()
     metalTexture = NULL;
     skyTexture = NULL;
 
+    qDebug("found OpenGL Context:");
+    qDebug("Vendor: %s", glGetString(GL_VENDOR));
+    qDebug("Renderer: %s", glGetString(GL_RENDERER));
     qDebug("Version: %s", glGetString(GL_VERSION));
     qDebug("Samples: %d %d", this->format().sampleBuffers(), this->format().samples());
 
@@ -1194,7 +1197,7 @@ void glViewWidget::initTextures()
     skyTexture = new myTexture(":/negx.jpg", ":/negy.jpg", ":/negz.jpg", ":/posx.jpg", ":/posy.jpg", ":/posz.jpg");
 #endif
 #ifdef Q_OS_WIN32
-    skyTexture = new myTexture(":/negx.jpg", ":/negy.jpg", ":/negz.jpg", ":/posx.jpg", ":/posy.jpg", ":/posz.jpg");
+    skyTexture = new myTexture(":/sky/negx.jpg", ":/sky/negy.jpg", ":/sky/negz.jpg", ":/sky/posx.jpg", ":/sky/posy.jpg", ":/sky/posz.jpg");
 #endif
 #ifdef Q_OS_MAC
     skyTexture = new myTexture(":/sky/negx.png", ":/sky/negy.png", ":/sky/negz.png", ":/sky/posx.png", ":/sky/posy.png", ":/sky/posz.png");

@@ -1,13 +1,13 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="metal.png">metal.png</file>
-        <file alias="background.png">background.png</file>
-        <file alias="negx.jpg">sky/negx.jpg</file>
-        <file alias="negy.jpg">sky/negy.jpg</file>
-        <file alias="negz.jpg">sky/negz.jpg</file>
-        <file alias="posx.jpg">sky/posx.jpg</file>
-        <file alias="posy.jpg">sky/posy.jpg</file>
-        <file alias="posz.jpg">sky/posz.jpg</file>
+        <file>metal.png</file>
+        <file>background.png</file>
+        <file>sky/negx.jpg</file>
+        <file>sky/negy.jpg</file>
+        <file>sky/negz.jpg</file>
+        <file>sky/posx.jpg</file>
+        <file>sky/posy.jpg</file>
+        <file>sky/posz.jpg</file>
         <file>shaders/debug.frag</file>
         <file>shaders/debug.vert</file>
         <file>shaders/floor.frag</file>

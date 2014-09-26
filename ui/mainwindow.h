@@ -124,8 +124,6 @@ signals:
 public slots:
     void showCurInfoPanel();
 
-    void on_actionExport_activated();
-
     void on_actionNew_triggered();
 
 #ifdef Q_OS_MAC
@@ -175,6 +173,8 @@ public slots:
 
 private slots:
     void on_actionExport_Model_As_triggered();
+
+    void on_actionExport_triggered();
 
 private:
     Ui::MainWindow *ui;

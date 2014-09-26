@@ -181,15 +181,6 @@ void MainWindow::on_actionExportAs_triggered()
     exportScreen->show();
 }
 
-void MainWindow::on_actionExport_activated()
-{
-    if(exportScreen->updateBoxes()) {
-        exportScreen->doFastExport();
-    } else {
-        on_actionExportAs_triggered();
-    }
-}
-
 void MainWindow::on_actionNew_triggered()
 {
     currentFileName.clear();
@@ -771,4 +762,13 @@ void MainWindow::on_actionExport_Model_As_triggered()
 {
     mObjectExporter->update();
     mObjectExporter->show();
+}
+
+void MainWindow::on_actionExport_triggered()
+{
+    if(exportScreen->updateBoxes()) {
+        exportScreen->doFastExport();
+    } else {
+        on_actionExportAs_triggered();
+    }
 }

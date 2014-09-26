@@ -26,6 +26,7 @@ myTexture::myTexture(QImage &_image, int mode)
     mId = getFreeID();
     myTexture::usedIDs[mId] = true;
     glActiveTexture(GL_TEXTURE0 + mId);
+    lenAssert(!_image.isNull());
     QImage conv = QGLWidget::convertToGLFormat(_image);
     glGenTextures(1, &handle);
     glBindTexture(GL_TEXTURE_2D, handle);
@@ -62,7 +63,11 @@ myTexture::myTexture(const char* _image, int mode)
     mId = getFreeID();
     myTexture::usedIDs[mId] = true;
     glActiveTexture(GL_TEXTURE0 + mId);
-    QImage conv = QGLWidget::convertToGLFormat(QImage(_image));
+
+    QImage img;
+    QString s(_image);
+    lenAssert(img.load(s));
+    QImage conv = QGLWidget::convertToGLFormat(img);
     glGenTextures(1, &handle);
     glBindTexture(GL_TEXTURE_2D, handle);
     GLfloat fLargest;
