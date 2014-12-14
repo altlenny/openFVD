@@ -17,7 +17,9 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+
+#*/
+#include <QtCore>
 
 #ifdef Q_OS_OSX
     #include <gl3.h>
