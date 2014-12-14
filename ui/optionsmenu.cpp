@@ -27,6 +27,7 @@
 #include "trackmesh.h"
 
 extern MainWindow* gloParent;
+extern glViewWidget* glView;
 
 optionsMenu::optionsMenu(QWidget *parent) :
     QDialog(parent),
@@ -936,7 +937,7 @@ void optionsMenu::on_backgroundButton_released()
 
 void optionsMenu::onbackgroundColor_received()
 {
-    gloParent->glView->setBackgroundColor(colorPicker->selectedColor());
+    glView->setBackgroundColor(colorPicker->selectedColor());
     backgroundColor = colorPicker->selectedColor();
     QPalette palette = ui->backgroundButton->palette();
     palette.setColor(QPalette::ButtonText, backgroundColor);

@@ -20,7 +20,7 @@
 #include <QtDebug>
 #include <QFile>
 #include <QTextStream>
-#include <ui/mainwindow.h>
+#include "mainwindow.h"
 #include "lenassert.h"
 
 QApplication* application;
@@ -66,7 +66,6 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 
 int main(int argc, char *argv[])
 {
-    //QApplication::setGraphicsSystem("raster");
     application = new QApplication(argc, argv);
 #ifndef Q_OS_MAC
     qInstallMessageHandler(myMessageHandler);

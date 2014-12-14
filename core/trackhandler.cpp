@@ -27,6 +27,7 @@
 #include <QTreeWidgetItem>
 
 extern MainWindow* gloParent;
+extern glViewWidget* glView;
 
 trackHandler::trackHandler(QString _name, int _id)
 {

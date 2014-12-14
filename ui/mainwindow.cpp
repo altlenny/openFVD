@@ -37,6 +37,7 @@
 #include "objectexporter.h"
 
 MainWindow* gloParent;
+glViewWidget* glView;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -58,11 +59,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    gloParent->glView = new glViewWidget(ui->splitter);
-    gloParent->glView->setObjectName(QStringLiteral("GraphicsView"));
-    gloParent->glView->setMinimumSize(QSize(0, 0));
-    gloParent->glView->setMouseTracking(true);
-    gloParent->glView->setFocusPolicy(Qt::StrongFocus);
+    glView = new glViewWidget(ui->splitter);
+    glView->setObjectName(QStringLiteral("GraphicsView"));
+    glView->setMinimumSize(QSize(0, 0));
+    glView->setMouseTracking(true);
+    glView->setFocusPolicy(Qt::StrongFocus);
     ui->splitter->addWidget(glView);
 
     // set up all sub widgets etc
@@ -74,18 +75,18 @@ MainWindow::MainWindow(QWidget *parent) :
     // set up GL frame
 #ifndef Q_OS_MAC
     if(mOptions->glPolicy == 1) {
-        gloParent->glView->legacyMode = true;
+        glView->legacyMode = true;
     } else
 #endif
     if(mOptions->glPolicy == 2) {
-        gloParent->glView->legacyMode = false;
+        glView->legacyMode = false;
     }
-    else if(gloParent->glView->format().majorVersion() < 3 || (gloParent->glView->format().majorVersion() == 3 && gloParent->glView->format().minorVersion() < 1)) {
-        gloParent->glView->legacyMode = true;
+    else if(glView->format().majorVersion() < 3 || (glView->format().majorVersion() == 3 && glView->format().minorVersion() < 1)) {
+        glView->legacyMode = true;
     } else {
-        gloParent->glView->legacyMode = false;
+        glView->legacyMode = false;
     }
-    if(gloParent->glView->legacyMode) {
+    if(glView->legacyMode) {
         delete ui->menuView;
     }
 
@@ -135,7 +136,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), gloParent->glView, SLOT(updateGL()));
+    connect(timer, SIGNAL(timeout()), glView, SLOT(updateGL()));
     connect(timer, SIGNAL(timeout()), this, SLOT(showCurInfoPanel()));
     timer->start(16);
 
@@ -216,7 +217,7 @@ void MainWindow::loadProject(QString fileName)
         currentFileName = fileName;
     }
 
-    gloParent->glView->paintMode = true;
+    glView->paintMode = true;
 
     delete gott;
     this->setWindowTitle(QString("FVD++ - " + currentFileName));
@@ -231,7 +232,7 @@ void MainWindow::on_actionLoad_triggered()
 {
     QString fileName;
 #endif
-    gloParent->glView->paintMode = false;
+    glView->paintMode = false;
 #ifdef Q_OS_MAC
     if(fileName.isEmpty()) {
         QFileDialog fd((QWidget*)this);
@@ -242,7 +243,7 @@ void MainWindow::on_actionLoad_triggered()
         fd.setWindowModality(Qt::WindowModal);
         fd.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
         if(!fd.exec()) {
-            gloParent->glView->paintMode = true;
+            glView->paintMode = true;
             return;
         }
         fileName = fd.selectedFiles().at(0);
@@ -252,7 +253,7 @@ void MainWindow::on_actionLoad_triggered()
 #endif
 
     if(fileName.isEmpty()) {
-        gloParent->glView->paintMode = true;
+        glView->paintMode = true;
         return;
     }
 
@@ -280,7 +281,7 @@ void MainWindow::on_actionLoad_triggered()
         currentFileName = fileName;
     }
 
-    gloParent->glView->paintMode = true;
+    glView->paintMode = true;
 
     delete gott;
     this->setWindowTitle(QString("FVD++ - " + currentFileName));
@@ -456,8 +457,8 @@ void MainWindow::on_actionUseShader5_triggered()
 
 void MainWindow::useShader(int shader)
 {
-    gloParent->glView->curTrackShader = shader;
-    gloParent->glView->hasChanged = true;
+    glView->curTrackShader = shader;
+    glView->hasChanged = true;
     switch(shader) {
     case 0:
         ui->actionUseShader0->setChecked(true);
@@ -512,10 +513,10 @@ void MainWindow::useShader(int shader)
 
 void MainWindow::showCurInfoPanel()
 {
-    if(!gloParent->glView->povMode) {
+    if(!glView->povMode) {
         return;
     }
-    updateInfoPanel(gloParent->glView->povNode);
+    updateInfoPanel(glView->povNode);
 }
 
 void MainWindow::updateInfoPanel()
@@ -629,7 +630,7 @@ void MainWindow::displayStatusMessage(QString message)
 
 void MainWindow::on_actionOptions_triggered()
 {
-    mOptions->setGLVersionString(gloParent->glView->getGLVersionString());
+    mOptions->setGLVersionString(glView->getGLVersionString());
     mOptions->show();
 }
 
@@ -640,7 +641,7 @@ void MainWindow::on_actionConversion_Panel_triggered()
 
 int MainWindow::getPovPos()
 {
-    return gloParent->glView->povPos;
+    return glView->povPos;
 }
 
 QString MainWindow::getCurrentFileName() {

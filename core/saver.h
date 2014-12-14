@@ -19,8 +19,8 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui/projectwidget.h"
-#include "core/track.h"
+#include "projectwidget.h"
+#include "track.h"
 #include <QString>
 
 class projectWidget;

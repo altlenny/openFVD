@@ -40,6 +40,7 @@
 #endif
 
 extern MainWindow* gloParent;
+extern glViewWidget* glView;
 
 projectWidget::projectWidget(QWidget *parent) :
     QWidget(parent),
@@ -91,22 +92,22 @@ void projectWidget::init()
         cleanUp();
     }
 
-    qDebug() << gloParent->glView;
+    qDebug() << glView;
 
     ui->texEdit->setText(QString("./background.png"));
-    gloParent->glView->loadGroundTexture(":/background.png");
+    glView->loadGroundTexture(":/background.png");
 
     newEmptyTrack();
 }
 
 void projectWidget::cleanUp()
 {
-    gloParent->glView->paintMode = false;
+    glView->paintMode = false;
     while(trackList.size()) {
         delete trackList[0];
         trackList.removeFirst();
     }
-    gloParent->glView->paintMode = true;
+    glView->paintMode = true;
 }
 
 void projectWidget::on_editButton_released()
@@ -367,9 +368,9 @@ QString projectWidget::loadProject(std::fstream& file)
         int namelength = readInt(&file);
         texPath = QString(readString(&file, namelength).c_str());
 
-        if(!gloParent->glView->loadGroundTexture(texPath)) { // error while Loading
+        if(!glView->loadGroundTexture(texPath)) { // error while Loading
             texPath = QString(":/background.png");
-            gloParent->glView->loadGroundTexture(texPath);
+            glView->loadGroundTexture(texPath);
             errType = 1;
         }
         ui->texEdit->setText(texPath);
@@ -456,7 +457,7 @@ void projectWidget::on_texChooser_released()
         if(fileName.endsWith(".png")) {
             texPath = relPath;
             ui->texEdit->setText(texPath);
-            gloParent->glView->loadGroundTexture(texPath);
+            glView->loadGroundTexture(texPath);
         } else {
             QMessageBox::warning(this, tr("Application"),
                                        QString("Texture has to a *.png file!"),

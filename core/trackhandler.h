@@ -19,8 +19,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include "mypanelopengl.h"
-#include "renderer/glviewwidget.h"
+#include "glviewwidget.h"
 
 class QTreeWidgetItem;
 class trackWidget;

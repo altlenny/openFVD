@@ -22,10 +22,11 @@
 #include "mnode.h"
 
 extern MainWindow* gloParent;
+extern glViewWidget* glView;
 
 trackMesh::trackMesh(track* parent)
 {
-    if(!gloParent->glView->legacyMode)
+    if(!glView->legacyMode)
     {
         glGenVertexArrays(5, TrackObject);
         glGenBuffers(7, TrackBuffer);
@@ -48,7 +49,7 @@ trackMesh::trackMesh(track* parent)
 
 trackMesh::~trackMesh()
 {
-    if(!gloParent->glView->legacyMode)
+    if(!glView->legacyMode)
     {
         glDeleteVertexArrays(5, TrackObject);
         glDeleteVertexArrays(5, HeartObject);
@@ -1110,7 +1111,7 @@ int trackMesh::createShadowBox(QVector<meshnode_t> &list, glm::vec3 P1l, glm::ve
 
 void trackMesh::buildMeshes(int fromNode)
 {
-    if(gloParent->glView->legacyMode) return;
+    if(glView->legacyMode) return;
     //rails.clear();
     //crossties.clear();
     rendersupports.clear();
@@ -3392,7 +3393,7 @@ void trackMesh::recolorTrack()
 
 void trackMesh::updateVertexArrays()
 {
-    if(!gloParent->glView->legacyMode)
+    if(!glView->legacyMode)
     {
     glBindVertexArray(TrackObject[0]);
 
@@ -3507,7 +3508,7 @@ void trackMesh::updateVertexArrays()
 void trackMesh::createIndices()
 {
     if(nodeList.isEmpty()) return;
-    glm::vec3 cameraPos = gloParent->glView->cameraPos;
+    glm::vec3 cameraPos = glView->cameraPos;
     int edgeCount = 0;
     for(int i = 0; i < options.size(); ++i) edgeCount += options[i].edges;
 

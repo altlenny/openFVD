@@ -19,21 +19,21 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef Q_OS_OSX
+#ifdef Q_OS_OSX
     #include <gl3.h>
     #include <gl3ext.h>
     #include <OpenGL.h>
     #include <glu.h>
 #endif
 
-#ifdef Q_OS_OSX // on Win / Unix
-    //#include "GL/glew.h"
-    //#include "GL/glu.h"
+#ifndef Q_OS_OSX // on Win / Unix
+    #include "GL/glew.h"
+    #include "GL/glu.h"
 #endif
 
 #include <QtGlobal>
 #include <QGLWidget>
-#include "core/track.h"
+#include "track.h"
 #include <QElapsedTimer>
 #include <QGLShaderProgram>
 #include <QGLBuffer>

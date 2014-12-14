@@ -54,7 +54,7 @@ using namespace OVR;
 extern MainWindow* gloParent;
 
 glViewWidget::glViewWidget(QWidget *parent) : QGLWidget(parent) {
-    //gloParent->glView = this;
+    //glView = this;
 
     QGLFormat format = QGLFormat::defaultFormat();
     format.setVersion(3, 2);
