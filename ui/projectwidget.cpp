@@ -40,7 +40,6 @@
 #endif
 
 extern MainWindow* gloParent;
-extern glViewWidget* glView;
 
 projectWidget::projectWidget(QWidget *parent) :
     QWidget(parent),
@@ -62,7 +61,13 @@ projectWidget::projectWidget(QWidget *parent) :
     ui->texEdit->setEnabled(false); // change this
     phantomChanges = false;
 
-    properties = new TrackProperties(this);
+    properties = new TrackProperties(gloParent);
+
+#ifdef Q_OS_MAC
+    properties->setWindowModality(Qt::WindowModal);
+    properties->setWindowFlags((properties->windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
+    properties->setFixedSize(QSize(400, 380));
+#endif
 
 }
 
@@ -86,20 +91,22 @@ void projectWidget::init()
         cleanUp();
     }
 
+    qDebug() << gloParent->glView;
+
     ui->texEdit->setText(QString("./background.png"));
-    glView->loadGroundTexture(":/background.png");
+    gloParent->glView->loadGroundTexture(":/background.png");
 
     newEmptyTrack();
 }
 
 void projectWidget::cleanUp()
 {
-    glView->paintMode = false;
+    gloParent->glView->paintMode = false;
     while(trackList.size()) {
         delete trackList[0];
         trackList.removeFirst();
     }
-    glView->paintMode = true;
+    gloParent->glView->paintMode = true;
 }
 
 void projectWidget::on_editButton_released()
@@ -142,7 +149,7 @@ void projectWidget::importFromProject(QString fileName)
         QFileDialog fd(gloParent);
         fd.setWindowTitle(tr("open FVD Data"));
         fd.setFileMode(QFileDialog::ExistingFile);
-        fd.setFilter(tr("FVD Data(*.fvd);;Backed Up FVD Data(*.bak)"));
+        fd.setNameFilter(tr("FVD Data(*.fvd);;Backed Up FVD Data(*.bak)"));
         fd.setDirectory(QDir::currentPath());
         fd.setWindowModality(Qt::WindowModal);
         fd.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
@@ -164,7 +171,7 @@ void projectWidget::importNLTrack()
 #ifdef Q_OS_MAC
     QFileDialog fd(gloParent);
     fd.setWindowTitle(tr("open NL1 Track"));
-    fd.setFilter(tr("NL1 Track(*.nltrack)"));
+    fd.setNameFilter(tr("NL1 Track(*.nltrack)"));
     fd.setFileMode(QFileDialog::ExistingFile);
     fd.setDirectory(QDir::currentPath());
     fd.setWindowModality(Qt::WindowModal);
@@ -189,7 +196,7 @@ void projectWidget::importPointList()
 #ifdef Q_OS_MAC
     QFileDialog fd(gloParent);
     fd.setWindowTitle(tr("open Text File"));
-    fd.setFilter(tr("Text(*.txt)"));
+    fd.setNameFilter(tr("Text(*.txt)"));
     fd.setFileMode(QFileDialog::ExistingFile);
     fd.setDirectory(QDir::currentPath());
     fd.setWindowModality(Qt::WindowModal);
@@ -301,11 +308,22 @@ bool projectWidget::areYouSure()
     QTreeWidgetItem* selected = ui->trackListWidget->selectedItems().at(0);
     int index = getTrack(selected);
 
-    QMessageBox::StandardButton ret;
-    ret = QMessageBox::warning(this, tr("Application"),
-                               QString("Are you sure you want to delete this track (").append(trackList[index]->trackData->name).append(")?"),
-                 QMessageBox::Yes | QMessageBox::Cancel);
-    return (ret == QMessageBox::Yes);
+    QMessageBox mb(gloParent);
+    mb.setIcon(QMessageBox::Warning);
+#ifdef Q_OS_MAC
+    mb.setWindowModality(Qt::WindowModal);
+    mb.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
+#endif
+    mb.setText(QString("Are you sure you want to delete this track (").append(trackList[index]->trackData->name).append(")?"));
+    mb.setWindowTitle(tr("Application"));
+    mb.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+    int ret = mb.exec();
+
+    if (ret == QMessageBox::Yes) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 QString projectWidget::saveProject(std::fstream& file)
@@ -349,9 +367,9 @@ QString projectWidget::loadProject(std::fstream& file)
         int namelength = readInt(&file);
         texPath = QString(readString(&file, namelength).c_str());
 
-        if(!glView->loadGroundTexture(texPath)) { // error while Loading
+        if(!gloParent->glView->loadGroundTexture(texPath)) { // error while Loading
             texPath = QString(":/background.png");
-            glView->loadGroundTexture(texPath);
+            gloParent->glView->loadGroundTexture(texPath);
             errType = 1;
         }
         ui->texEdit->setText(texPath);
@@ -419,7 +437,7 @@ void projectWidget::on_texChooser_released()
 #ifdef Q_OS_MAC
     QFileDialog fd(gloParent);
     fd.setWindowTitle(tr("Load Texture"));
-    fd.setFilter(tr("PNG Image (*.png)"));
+    fd.setNameFilter(tr("PNG Image (*.png)"));
     fd.setFileMode(QFileDialog::ExistingFile);
     fd.setDirectory("");
     fd.setWindowModality(Qt::WindowModal);
@@ -438,7 +456,7 @@ void projectWidget::on_texChooser_released()
         if(fileName.endsWith(".png")) {
             texPath = relPath;
             ui->texEdit->setText(texPath);
-            glView->loadGroundTexture(texPath);
+            gloParent->glView->loadGroundTexture(texPath);
         } else {
             QMessageBox::warning(this, tr("Application"),
                                        QString("Texture has to a *.png file!"),

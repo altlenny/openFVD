@@ -26,7 +26,6 @@
 #include "smoothui.h"
 
 extern MainWindow* gloParent;
-extern glViewWidget* glView;
 
 graphWidget::graphWidget(QWidget *parent, trackHandler* _track) :
     QWidget(parent),
@@ -239,7 +238,7 @@ void graphWidget::MouseWheelPlotter()
 void graphWidget::drawGraph(int index)
 {
     if(pGraphList[index]->mType == povPos) {
-        if(pGraphList[index]->treeItem->checkState(1) == Qt::Unchecked || !glView->povMode) {
+        if(pGraphList[index]->treeItem->checkState(1) == Qt::Unchecked || !gloParent->glView->povMode) {
             ui->povLine->hide();
             return;
         }

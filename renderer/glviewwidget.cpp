@@ -53,23 +53,16 @@ using namespace OVR;
 
 extern MainWindow* gloParent;
 
-#ifdef Q_OS_MAC
-void* select_3_2_mac_visual(GDHandle handle);       // Ercan: interessante Stelle, sollte aber alles nach Schema F sein
+glViewWidget::glViewWidget(QWidget *parent) : QGLWidget(parent) {
+    //gloParent->glView = this;
 
-struct Core3_2_context : public QGLContext
-{
- Core3_2_context(const QGLFormat& format, QPaintDevice* device) : QGLContext(format,device) {}
- Core3_2_context(const QGLFormat& format) : QGLContext(format) {}
-
-    virtual void* chooseMacVisual(GDHandle handle)
- {
-  return select_3_2_mac_visual(handle);
- }
-};
-
-glViewWidget::glViewWidget(QWidget *parent) : QGLWidget((gloParent->mOptions->glPolicy == 2 ? new Core3_2_context(QGLFormat::defaultFormat()) : new QGLContext(QGLFormat::defaultFormat())), parent) // Ercan: glPolicy = 2 -> OpenGL3 Kontext, glPolicy = 1, normaler Kontext
-{
+    QGLFormat format = QGLFormat::defaultFormat();
+    format.setVersion(3, 2);
+    format.setSampleBuffers(true);
+    format.setOverlay(false);
+    setFormat(format);
     setMouseTracking(true);
+    setAttribute(Qt::WA_OpaquePaintEvent,true);
 
     simpleShadowFb = NULL;
     shadowVolumeFb = NULL;
@@ -77,29 +70,8 @@ glViewWidget::glViewWidget(QWidget *parent) : QGLWidget((gloParent->mOptions->gl
     occlusionFb = NULL;
     preDistortionFb = NULL;
     floorOpacity = 0.8;
+    initialized = 0;
 }
-
-#endif
-
-#ifndef Q_OS_MAC // on Win / Unix
-glViewWidget::glViewWidget(QWidget *parent) : QGLWidget(parent)
-    {
-        QGLFormat format = QGLFormat::defaultFormat();
-        format.setSampleBuffers(true);
-        format.setOverlay(false);
-        this->setFormat(format);
-        setMouseTracking(true);
-        setAttribute(Qt::WA_OpaquePaintEvent,true);
-
-        simpleShadowFb = NULL;
-        shadowVolumeFb = NULL;
-        normalMapFb = NULL;
-        occlusionFb = NULL;
-        preDistortionFb = NULL;
-        floorOpacity = 0.8;
-        initialized = 0;
-    }
-#endif
 
 glViewWidget::~glViewWidget()
 {
@@ -141,8 +113,6 @@ void glViewWidget::drawFloor()
 
     if(shadowMode == 0) floorShader->useUniform("shadowTex", simpleShadowFb->getTexture());
     else if(shadowMode > 0)  floorShader->useUniform("shadowTex", shadowVolumeFb->getTexture());
-
-
 
     floorShader->useUniform("border", (GLuint)drawBorder);
     floorShader->useUniform("grid", (GLuint) gloParent->mOptions->drawGrid);
@@ -1194,13 +1164,13 @@ void glViewWidget::initTextures()
     rasterTexture = new myTexture(*raster, 1);
     loadGroundTexture(":/background.png");
 #ifdef Q_OS_LINUX
-    skyTexture = new myTexture(":/negx.jpg", ":/negy.jpg", ":/negz.jpg", ":/posx.jpg", ":/posy.jpg", ":/posz.jpg");
+    skyTexture = new myTexture(":/sky/negx.jpg", ":/sky/negy.jpg", ":/sky/negz.jpg", ":/sky/posx.jpg", ":/sky/posy.jpg", ":/sky/posz.jpg");
 #endif
 #ifdef Q_OS_WIN32
     skyTexture = new myTexture(":/sky/negx.jpg", ":/sky/negy.jpg", ":/sky/negz.jpg", ":/sky/posx.jpg", ":/sky/posy.jpg", ":/sky/posz.jpg");
 #endif
 #ifdef Q_OS_MAC
-    skyTexture = new myTexture(":/sky/negx.png", ":/sky/negy.png", ":/sky/negz.png", ":/sky/posx.png", ":/sky/posy.png", ":/sky/posz.png");
+    skyTexture = new myTexture(":/sky/negx.jpg", ":/sky/negy.jpg", ":/sky/negz.jpg", ":/sky/posx.jpg", ":/sky/posy.jpg", ":/sky/posz.jpg");
 #endif
     metalTexture = new myTexture(":/metal.png", 2);
     delete raster;
@@ -1215,7 +1185,7 @@ void glViewWidget::initShaders()
     floorShader = new myShader(":/shaders/floor.vert", ":/shaders/floor.frag");
 #endif
 #ifdef Q_OS_MAC
-    floorShader = new myShader(":/floor.vert", ":/floor.frag");
+    floorShader = new myShader(":/shaders/floor.vert", ":/shaders/floor.frag");
 #endif
     floorShader->useAttribute(0, "aPosition");
     floorShader->useAttribute(1, "aNormal");
@@ -1228,7 +1198,7 @@ void glViewWidget::initShaders()
     skyShader = new myShader(":/shaders/sky.vert", ":/shaders/sky.frag");
 #endif
 #ifdef Q_OS_MAC
-    skyShader = new myShader(":/sky.vert", ":/sky.frag");
+    skyShader = new myShader(":/shaders/sky.vert", ":/shaders/sky.frag");
 #endif
     skyShader->useAttribute(0, "aPosition");
     skyShader->linkProgram();
@@ -1240,7 +1210,7 @@ void glViewWidget::initShaders()
     trackShader = new myShader(":/shaders/track.vert", ":/shaders/track.frag");
 #endif
 #ifdef Q_OS_MAC
-    trackShader = new myShader(":/track.vert", ":/track.frag");
+    trackShader = new myShader(":/shaders/track.vert", ":/shaders/track.frag");
 #endif
     trackShader->useAttribute(0, "aPosition");
     trackShader->useAttribute(1, "aVel");
@@ -1262,7 +1232,7 @@ void glViewWidget::initShaders()
     simpleSMShader = new myShader(":/shaders/simpleSM.vert", ":/shaders/simpleSM.frag");
 #endif
 #ifdef Q_OS_MAC
-    simpleSMShader = new myShader(":/simpleSM.vert", ":/simpleSM.frag");
+    simpleSMShader = new myShader(":/shaders/simpleSM.vert", ":/shaders/simpleSM.frag");
 #endif
     simpleSMShader->useAttribute(0, "aPosition");
     simpleSMShader->setOutput(0, "visibility");
@@ -1278,7 +1248,7 @@ void glViewWidget::initShaders()
     shadowVolumeShader = new myShader(":/shaders/shadowVolume.vert", ":/shaders/shadowVolume.frag");
 #endif
 #ifdef Q_OS_MAC
-    shadowVolumeShader = new myShader(":/shadowVolume.vert", ":/shadowVolume.frag");
+    shadowVolumeShader = new myShader(":/shaders/shadowVolume.vert", ":/shaders/shadowVolume.frag");
 #endif
     shadowVolumeShader->useAttribute(0, "aPosition");
     shadowVolumeShader->setOutput(0, "visibility");
@@ -1294,7 +1264,7 @@ void glViewWidget::initShaders()
     normalMapShader = new myShader(":/shaders/normals.vert", ":/shaders/normals.frag");
 #endif
 #ifdef Q_OS_MAC
-    normalMapShader = new myShader(":/normals.vert", ":/normals.frag");
+    normalMapShader = new myShader(":/shaders/normals.vert", ":/shaders/normals.frag");
 #endif
     normalMapShader->useAttribute(0, "aPosition");
     normalMapShader->useAttribute(7, "aNormal");
@@ -1314,7 +1284,7 @@ void glViewWidget::initShaders()
     occlusionShader = new myShader(":/shaders/occlusion.vert", ":/shaders/occlusion.frag");
 #endif
 #ifdef Q_OS_MAC
-    occlusionShader = new myShader(":/occlusion.vert", ":/occlusion.frag");
+    occlusionShader = new myShader(":/shaders/occlusion.vert", ":/shaders/occlusion.frag");
 #endif
     occlusionShader->useAttribute(0, "aPosition");
     occlusionShader->setOutput(0, "visibility");
@@ -1327,7 +1297,7 @@ void glViewWidget::initShaders()
     debugShader = new myShader(":/shaders/debug.vert", ":/shaders/debug.frag");
 #endif
 #ifdef Q_OS_MAC
-    debugShader = new myShader(":/debug.vert", ":/debug.frag");
+    debugShader = new myShader(":/shaders/debug.vert", ":/shaders/debug.frag");
 #endif
     debugShader->useAttribute(0, "aPosition");
     debugShader->linkProgram();
@@ -1340,7 +1310,7 @@ void glViewWidget::initShaders()
     oculusShader = new myShader("../FVD/oculus.vert", "../FVD/oculus.frag");
 #endif
 #ifdef Q_OS_MAC
-    oculusShader = new myShader(":/oculus.vert", ":/oculus.frag");
+    oculusShader = new myShader(":/shaders/oculus.vert", ":/shaders/oculus.frag");
 #endif
     oculusShader->useAttribute(0, "aPosition");
     oculusShader->linkProgram();

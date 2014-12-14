@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+<plist version="0.9">
+<dict>
+        <key>BuildMachineOSBuild</key>
+        <string>12C60</string>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>en</string>
+        <key>CFBundleDocumentTypes</key>
+        <array>
+                <dict>
+                        <key>CFBundleTypeExtensions</key>
+                        <array>
+                                <string>fvd</string>
+                        </array>
+                        <key>CFBundleTypeIconFile</key>
+                        <string>icon.icns</string>
+                        <key>CFBundleTypeMIMETypes</key>
+                        <array>
+                                <string>application/fvd</string>
+                        </array>
+                        <key>CFBundleTypeName</key>
+                        <string>FVD++ Project File</string>
+                        <key>CFBundleTypeOSTypes</key>
+                        <array>
+                                <string>????</string>
+                        </array>
+                        <key>CFBundleTypeRole</key>
+                        <string>Editor</string>
+                        <key>LSTypeIsPackage</key>
+                        <false/>
+                        <key>NSDocumentClass</key>
+                        <string>Document</string>
+                </dict>
+        </array>
+
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>CFBundleIconFile</key>
+	<string>fvd.icns</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleGetInfoString</key>
+        <string>FVD++</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleExecutable</key>
+	<string>FVD</string>
+	<key>CFBundleIdentifier</key>
+        <string>com.altlenny.FVD</string>
+	<key>NOTE</key>
+        <string>FVD++</string>
+</dict>
+</plist>

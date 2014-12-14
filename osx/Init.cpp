@@ -21,6 +21,7 @@
 
 #include <QMessageBox>
 #include <importui.h>
+#include <QApplication>
 
 extern MainWindow* gloParent;
 extern QApplication* application;

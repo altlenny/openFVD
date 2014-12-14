@@ -37,11 +37,6 @@
 #include "objectexporter.h"
 
 MainWindow* gloParent;
-glViewWidget* glView;
-
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
-void* setFullScreen(QMainWindow *mainWindow); // Ab OSX 10.7 gibt es eine tolle fullscreen mode :)
-#endif
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -62,28 +57,35 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
     ui->setupUi(this);
+
+    gloParent->glView = new glViewWidget(ui->splitter);
+    gloParent->glView->setObjectName(QStringLiteral("GraphicsView"));
+    gloParent->glView->setMinimumSize(QSize(0, 0));
+    gloParent->glView->setMouseTracking(true);
+    gloParent->glView->setFocusPolicy(Qt::StrongFocus);
+    ui->splitter->addWidget(glView);
+
     // set up all sub widgets etc
-    glView = ui->GraphicsView;
     project = ui->projectTab;
     currentFileName.clear();
     this->setWindowTitle(QString("FVD++ - unsaved Work"));
 
 
-    // set up GL frame    
+    // set up GL frame
+#ifndef Q_OS_MAC
     if(mOptions->glPolicy == 1) {
-        ui->GraphicsView->legacyMode = true;
-    } else if(mOptions->glPolicy == 2) {
-        ui->GraphicsView->legacyMode = false;
-    }
-#ifndef Q_OS_MAC // on Win / Unix check for OpenGL version at least 3.1
-    else if(ui->GraphicsView->format().majorVersion() < 3 || (ui->GraphicsView->format().majorVersion() == 3 && ui->GraphicsView->format().minorVersion() < 1)) {
-        ui->GraphicsView->legacyMode = true;
-    } else {
-        ui->GraphicsView->legacyMode = false;
-    }
+        gloParent->glView->legacyMode = true;
+    } else
 #endif
-
-    if(ui->GraphicsView->legacyMode) {
+    if(mOptions->glPolicy == 2) {
+        gloParent->glView->legacyMode = false;
+    }
+    else if(gloParent->glView->format().majorVersion() < 3 || (gloParent->glView->format().majorVersion() == 3 && gloParent->glView->format().minorVersion() < 1)) {
+        gloParent->glView->legacyMode = true;
+    } else {
+        gloParent->glView->legacyMode = false;
+    }
+    if(gloParent->glView->legacyMode) {
         delete ui->menuView;
     }
 
@@ -113,6 +115,9 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifdef Q_OS_MAC
     exportScreen->setWindowModality(Qt::WindowModal);
     exportScreen->setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
+
+    mObjectExporter->setWindowModality(Qt::WindowModal);
+    mObjectExporter->setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
 #endif
 
     setUndoButtons();
@@ -130,7 +135,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), ui->GraphicsView, SLOT(updateGL()));
+    connect(timer, SIGNAL(timeout()), gloParent->glView, SLOT(updateGL()));
     connect(timer, SIGNAL(timeout()), this, SLOT(showCurInfoPanel()));
     timer->start(16);
 
@@ -139,13 +144,6 @@ MainWindow::MainWindow(QWidget *parent) :
     autosave->start(1000*60);
 
     connect(this, SIGNAL(emitMessage(QString,int)), ui->statusBar, SLOT(showMessage(QString,int)));
-
-    // Mac fullscreen
-    #ifdef Q_OS_MAC
-    #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
-    setFullScreen(this);
-    #endif
-    #endif
 }
 
 MainWindow::~MainWindow()
@@ -218,7 +216,7 @@ void MainWindow::loadProject(QString fileName)
         currentFileName = fileName;
     }
 
-    ui->GraphicsView->paintMode = true;
+    gloParent->glView->paintMode = true;
 
     delete gott;
     this->setWindowTitle(QString("FVD++ - " + currentFileName));
@@ -233,20 +231,18 @@ void MainWindow::on_actionLoad_triggered()
 {
     QString fileName;
 #endif
-    ui->GraphicsView->paintMode = false;
+    gloParent->glView->paintMode = false;
 #ifdef Q_OS_MAC
     if(fileName.isEmpty()) {
         QFileDialog fd((QWidget*)this);
         fd.setWindowTitle("open FVD Data");
         fd.setFileMode(QFileDialog::ExistingFile);
-        fd.setFilter(tr("FVD Data(*.fvd);;Backed Up FVD Data(*.bak)"));
+        fd.setNameFilter(tr("FVD Data(*.fvd);;Backed Up FVD Data(*.bak)"));
         fd.setDirectory(QDir::currentPath());
         fd.setWindowModality(Qt::WindowModal);
         fd.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
-
-        fd.setOption(QFileDialog::DontUseNativeDialog, true);
         if(!fd.exec()) {
-            ui->GraphicsView->paintMode = true;
+            gloParent->glView->paintMode = true;
             return;
         }
         fileName = fd.selectedFiles().at(0);
@@ -256,7 +252,7 @@ void MainWindow::on_actionLoad_triggered()
 #endif
 
     if(fileName.isEmpty()) {
-        ui->GraphicsView->paintMode = true;
+        gloParent->glView->paintMode = true;
         return;
     }
 
@@ -284,7 +280,7 @@ void MainWindow::on_actionLoad_triggered()
         currentFileName = fileName;
     }
 
-    ui->GraphicsView->paintMode = true;
+    gloParent->glView->paintMode = true;
 
     delete gott;
     this->setWindowTitle(QString("FVD++ - " + currentFileName));
@@ -330,7 +326,7 @@ void MainWindow::on_actionSave_As_triggered()
 #ifdef Q_OS_MAC
     QFileDialog fd(this);
     fd.setWindowTitle(tr("Save File"));
-    fd.setFilter(tr("FVD Data(*.fvd)"));
+    fd.setNameFilter(tr("FVD Data(*.fvd)"));
     fd.setAcceptMode(QFileDialog::AcceptSave);
     fd.selectFile(currentFileName.length()?currentFileName:"Untitled");
     fd.setDirectory("");
@@ -460,8 +456,8 @@ void MainWindow::on_actionUseShader5_triggered()
 
 void MainWindow::useShader(int shader)
 {
-    ui->GraphicsView->curTrackShader = shader;
-    ui->GraphicsView->hasChanged = true;
+    gloParent->glView->curTrackShader = shader;
+    gloParent->glView->hasChanged = true;
     switch(shader) {
     case 0:
         ui->actionUseShader0->setChecked(true);
@@ -516,10 +512,10 @@ void MainWindow::useShader(int shader)
 
 void MainWindow::showCurInfoPanel()
 {
-    if(!ui->GraphicsView->povMode) {
+    if(!gloParent->glView->povMode) {
         return;
     }
-    updateInfoPanel(ui->GraphicsView->povNode);
+    updateInfoPanel(gloParent->glView->povNode);
 }
 
 void MainWindow::updateInfoPanel()
@@ -633,7 +629,7 @@ void MainWindow::displayStatusMessage(QString message)
 
 void MainWindow::on_actionOptions_triggered()
 {
-    mOptions->setGLVersionString(ui->GraphicsView->getGLVersionString());
+    mOptions->setGLVersionString(gloParent->glView->getGLVersionString());
     mOptions->show();
 }
 
@@ -644,7 +640,7 @@ void MainWindow::on_actionConversion_Panel_triggered()
 
 int MainWindow::getPovPos()
 {
-    return ui->GraphicsView->povPos;
+    return gloParent->glView->povPos;
 }
 
 QString MainWindow::getCurrentFileName() {

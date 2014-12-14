@@ -20,14 +20,14 @@
 */
 
 #include <QMainWindow>
-#include "glviewwidget.h"
-#include "trackhandler.h"
-#include "sectionhandler.h"
+#include "renderer/glviewwidget.h"
+#include "core/trackhandler.h"
+#include "core/sectionhandler.h"
 
 #include <QtGlobal>
 
-#include "track.h"
-#include "saver.h"
+#include "core/track.h"
+#include "core/saver.h"
 
 #include <fstream>
 #include <QStyledItemDelegate>
@@ -115,6 +115,7 @@ public:
     graphWidget* mGraphWidget;
 
     projectWidget* project;
+    glViewWidget* glView;
 
     bool undoChanges;
 

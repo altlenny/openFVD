@@ -238,9 +238,9 @@ void exportUi::on_buttonBox_accepted()
     QFileDialog fd(gloParent);
     fd.setWindowTitle(tr("Save File"));
     if(ui->exportTypeBox->currentIndex() == 0) {
-        fd.setFilter(tr("NL Element (*.nl2elem)"));
+        fd.setNameFilter(tr("NL Element (*.nl2elem)"));
     } else {
-        fd.setFilter(tr("NL Element (*.nlelem)"));
+        fd.setNameFilter(tr("NL Element (*.nlelem)"));
     }
     fd.setAcceptMode(QFileDialog::AcceptSave);
     fd.selectFile(gloParent->getCurrentFileName().length()?gloParent->getCurrentFileName().replace(".fvd", ""):"Untitled");

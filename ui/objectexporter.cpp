@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <QFileDialog>
 
 #include "mainwindow.h"
 #include "trackmesh.h"
@@ -70,7 +71,7 @@ bool objectExporter::update()
 // TODO: Build own exporter class
 void objectExporter::on_buttonBox_accepted()
 {
-    /*QString fileName = QFileDialog::getSaveFileName(gloParent, "Save 3ds Object", ".", "3D Object (*.3ds)", 0, 0);
+    QString fileName = QFileDialog::getSaveFileName(gloParent, "Save 3ds Object", ".", "3D Object (*.3ds)", 0, 0);
 
     QList<trackHandler*> trackList = gloParent->getTrackList();
     trackHandler* curTrack = trackList[ui->trackBox->currentIndex()];
@@ -103,8 +104,9 @@ void objectExporter::on_buttonBox_accepted()
             for(int i = 0; i < vertices->size()/3; ++i) {
                 fvertices[3*i+0] = vertices->at(3*i+0);
                 fvertices[3*i+1] = -vertices->at(3*i+2);
+                fvertices[3*i+2] = vertices->at(3*i+1);
 
-                //exportScreen->doFastExport();fvertices[3*i+2] = vertices->at(3*i+1);
+                //exportScreen->doFastExport();
             }
             for(int subIndex = 0; subIndex < borders->size()-2; subIndex+= 2) {
                 int fromVIndex = borders->at(subIndex)/3;
@@ -172,5 +174,5 @@ void objectExporter::on_buttonBox_accepted()
     lib3ds_file_free(file);
 
     delete indices;
-    delete vertices;*/
+    delete vertices;
 }

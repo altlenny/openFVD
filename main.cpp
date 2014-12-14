@@ -20,7 +20,7 @@
 #include <QtDebug>
 #include <QFile>
 #include <QTextStream>
-#include "mainwindow.h"
+#include <ui/mainwindow.h>
 #include "lenassert.h"
 
 QApplication* application;
@@ -68,12 +68,22 @@ int main(int argc, char *argv[])
 {
     //QApplication::setGraphicsSystem("raster");
     application = new QApplication(argc, argv);
+#ifndef Q_OS_MAC
     qInstallMessageHandler(myMessageHandler);
 
-    qDebug() << "Main Window init";
     FILE* log = fopen("fvd.log", "w");
     fprintf(log, "FVD++ v0.77 Logfile\n");
     fclose(log);
+#endif
+
+#ifdef Q_OS_MAC
+    QGLFormat fmt;
+    fmt.setProfile(QGLFormat::CoreProfile);
+    fmt.setVersion(3,2);
+    fmt.setSampleBuffers(true);
+    fmt.setSamples(4);
+    QGLFormat::setDefaultFormat(fmt);
+#endif
 
     MainWindow w;
     w.show();

@@ -27,7 +27,6 @@
 #include "trackmesh.h"
 
 extern MainWindow* gloParent;
-extern glViewWidget* glView;
 
 optionsMenu::optionsMenu(QWidget *parent) :
     QDialog(parent),
@@ -40,8 +39,6 @@ optionsMenu::optionsMenu(QWidget *parent) :
     this->setFixedSize(700, 700);
     this->setMinimumSize(700, 700);
     this->setMaximumSize(700, 700);
-
-    qDebug() << "Rest";
 #endif
 
     optionsFile = common::getResource("options.cfg", true);
@@ -85,9 +82,8 @@ optionsMenu::optionsMenu(QWidget *parent) :
     ui->setupUi(this);
 
     #ifdef Q_OS_MAC
-    int temp = glPolicy;
-    ui->glBox->removeItem(0);
-    glPolicy = temp;
+    ui->distanceLabel_2->setVisible(false);
+    ui->glBox->setVisible(false);
     #endif
 
     ui->gridBox->setChecked(drawGrid);
@@ -940,7 +936,7 @@ void optionsMenu::on_backgroundButton_released()
 
 void optionsMenu::onbackgroundColor_received()
 {
-    glView->setBackgroundColor(colorPicker->selectedColor());
+    gloParent->glView->setBackgroundColor(colorPicker->selectedColor());
     backgroundColor = colorPicker->selectedColor();
     QPalette palette = ui->backgroundButton->palette();
     palette.setColor(QPalette::ButtonText, backgroundColor);

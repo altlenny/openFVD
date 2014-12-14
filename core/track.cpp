@@ -31,7 +31,6 @@
 using namespace std;
 
 extern MainWindow* gloParent;
-extern glViewWidget* glView;
 
 
 track::track()

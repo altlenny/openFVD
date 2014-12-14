@@ -32,6 +32,11 @@ myShader::myShader(const char* _vertex, const char* _fragment)
     sources[1] = glCreateShader(GL_FRAGMENT_SHADER);
     program = glCreateProgram();
 
+#ifdef Q_OS_MAC
+    v.replace("#version 130", "#version 150 core");
+    f.replace("#version 130", "#version 150 core");
+#endif
+
     char* v1 = new char[v.size()+1];
     strcpy(v1, v.toLocal8Bit().data());
     char* v2 = new char[f.size()+1];

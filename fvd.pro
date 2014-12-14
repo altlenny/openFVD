@@ -166,12 +166,35 @@ unix:!macx {
 }
 
 macx {
+    ICON = fvd.icns
+    QMAKE_INFO_PLIST = ./osx/resources/Info.plist
+
+    INCLUDEPATH += "./ui/"
+    INCLUDEPATH += "./renderer/"
+    INCLUDEPATH += "./core/"
+    INCLUDEPATH += "./glm/"
+    INCLUDEPATH += "/usr/local/include/"
+
+    LIBS += -framework Foundation -framework Cocoa
+    LIBS += -L /usr/local/lib/
+    LIBS += -l3ds
+
     QMAKE_CFLAGS_X86_64 += -mmacosx-version-min=10.6
     QMAKE_CXXFLAGS_X86_64 = $$QMAKE_CFLAGS_X86_64
     QMAKE_CXXFLAGS_RELEASE += -O2
 
-    LIBS += -framework Foundation -framework Cocoa
-    ICON = fvd.icns
+    OBJECTIVE_SOURCES += \
+        osx/Document.mm \
+        osx/MainDelagate.mm \
+        osx/NSApplicationMain.mm
+
+    HEADERS += \
+        osx/Document.h \
+        osx/MainDelagate.h \
+        osx/NSApplicationMain.h
+
+    SOURCES +=  \
+        osx/Init.cpp
 }
 
 RESOURCES += \

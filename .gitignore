@@ -26,3 +26,11 @@
 *.exe
 *.out
 *.app
+
+# OSX Crap
+*.DS_Store
+.DS_Store
+
+# QT Crap
+*.pro.user
+*.user

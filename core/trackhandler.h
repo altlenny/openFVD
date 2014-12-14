@@ -20,7 +20,7 @@
 */
 
 //#include "mypanelopengl.h"
-#include "glviewwidget.h"
+#include "renderer/glviewwidget.h"
 
 class QTreeWidgetItem;
 class trackWidget;
