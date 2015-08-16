@@ -531,6 +531,18 @@ void glViewWidget::paintGL()
     setBackgroundColor(gloParent->mOptions->backgroundColor);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+	renderTime = frameTimer.nsecsElapsed()/1000000000.f;
+	frameTimer.start();
+
+/*	static float avgTime = 0.f;
+	static int frames = 0;
+	frames++;
+	avgTime+=renderTime;
+	if(frames%60 == 0) {
+		qDebug("%4.1f fps", 60.f/avgTime);
+		avgTime = 0.f;
+	}*/
+
     if(!legacyMode)
     {
         moveCamera();
@@ -911,8 +923,8 @@ void glViewWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if(moveMode)
     {
-        float rotateX = 0.5f * ((mousePos.x() - this->mapToGlobal(event->pos()).x())/2);
-        float rotateY = 0.5f * ((mousePos.y() - this->mapToGlobal(event->pos()).y())/2);
+		float rotateX = 0.25f * (mousePos.x() - cursor().pos().x());
+		float rotateY = 0.25f * (mousePos.y() - cursor().pos().y());
         float sign = 1.f;
         glm::vec3 up = glm::cross(freeFlySide, freeFlyDir);
         if(up.y < 0)
@@ -1316,13 +1328,9 @@ void glViewWidget::initShaders()
 
 void glViewWidget::moveCamera()
 {
-    double sinceLast = frameTimer.nsecsElapsed()/1000000000.f;
-    frameTimer.start();
-
-
     if(povMode)
     {
-        povPos += (int)(F_HZ*sinceLast)*cameraBoost*(cameraMov.x - cameraMov.z);
+		povPos += (int)(F_HZ*renderTime)*cameraBoost*(cameraMov.x - cameraMov.z);
         if(gloParent->curTrack())
         {
             if(povPos < 0)

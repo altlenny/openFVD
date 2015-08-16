@@ -138,7 +138,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), glView, SLOT(updateGL()));
     connect(timer, SIGNAL(timeout()), this, SLOT(showCurInfoPanel()));
-    timer->start(16);
+	timer->start(10);
 
     QTimer *autosave = new QTimer(this);
     connect(autosave, SIGNAL(timeout()), this, SLOT(doAutoSave()));

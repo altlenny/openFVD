@@ -134,21 +134,22 @@ FORMS    += ui/transitionwidget.ui \
     ui/exportui.ui \
     ui/conversionpanel.ui
 
-win32 {
+!unix:!macx {
     INCLUDEPATH += "./ui/"
     INCLUDEPATH += "./renderer/"
     INCLUDEPATH += "./core/"
 
-    INCLUDEPATH += "C:\Libraries\glew-1.11.0\include" # path-to-glew/include
-    INCLUDEPATH += "C:\Libraries\glm" #path-to-glm"
-    INCLUDEPATH += "C:\Libraries\lib3ds-20080909\src" #path-to-lib3ds
+	INCLUDEPATH += "C:\Development\Libraries\glew-1.12.0\include" # path-to-glew/include
+	INCLUDEPATH += "C:\Development\Libraries\glm" #path-to-glm"
+	INCLUDEPATH += "C:\Development\Libraries\lib3ds-20080909\src" #path-to-lib3ds
 
     RC_FILE = winicon.rc
 
     LIBS += -lOpenGL32
     LIBS += -lGlU32
-    LIBS += "C:\Libraries\glew-1.11.0\lib\Release\Win32\glew32.lib" #path-to-glew\lib\Release\Win32\glew32.lib
-    LIBS += "C:\Libraries\glew-1.11.0\bin\Release\Win32\glew32.dll" #path-to-glew\bin\Release\Win32\glew32.dll
+	LIBS += "C:\Development\Libraries\glew-1.12.0\lib\Release\x64\glew32.lib" #path-to-glew\lib\Release\Win32\glew32.lib
+	LIBS += "C:\Development\Libraries\glew-1.12.0\bin\Release\x64\glew32.dll" #path-to-glew\bin\Release\Win32\glew32.dll
+	LIBS += "C:\Development\Libraries\lib3ds-20080909\build-lib3ds-64Bit-Release\release\lib3ds.dll" #path-to-glew\bin\Release\Win32\glew32.dll
 }
 
 unix:!macx {

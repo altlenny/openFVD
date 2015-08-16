@@ -66,7 +66,7 @@ public:
     float getSpeed();
     bool setLocked(eFunctype func, int _id, bool _active);
     void calcDirFromLast(int i);
-    QList<mnode*> lNodes;
+	QList<mnode*> lNodes;
     track* parent;
     function* rollFunc;
 

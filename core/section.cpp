@@ -243,7 +243,7 @@ void section::fFillPointList(QList<int> &List, float mPerNode)
         numNodes = 2;
     }
     int nodeCount = 0;
-    if(this->type == straight) {
+	if(this->type == straight && this->rollFunc->funcList.size() == 1 && this->rollFunc->funcList[0]->symArg == 0.f) {
         if(List.size()) {
             List.last() *= -1;
         }
