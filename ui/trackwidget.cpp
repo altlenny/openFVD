@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -752,7 +752,7 @@ void trackWidget::on_anchorSpeedBox_valueChanged(double arg1)
     if(phantomChanges) return;
 
     inTrack->trackData->anchorNode->fVel = arg1/gloParent->mOptions->getSpeedFactor();
-    inTrack->trackData->anchorNode->fEnergy = 0.5*inTrack->trackData->anchorNode->fVel*inTrack->trackData->anchorNode->fVel + 9.80665f*inTrack->trackData->anchorNode->fPosHearty(0.9*inTrack->trackData->fHeart);
+    inTrack->trackData->anchorNode->fEnergy = 0.5*inTrack->trackData->anchorNode->fVel*inTrack->trackData->anchorNode->fVel + F_G*inTrack->trackData->anchorNode->fPosHearty(0.9*inTrack->trackData->fHeart);
 
     updateAnchorGeometrics();
 

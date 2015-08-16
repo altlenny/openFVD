@@ -3,7 +3,7 @@
 
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #define TO_RAD(angle) ((angle)*F_RAD)
 #define TO_DEG(angle) ((angle)*F_DEG)
 
+#define F_G (9.80665f)
 
 #define GLM_FORCE_RADIANS
 #include "glm/glm.hpp"

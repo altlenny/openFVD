@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -208,7 +208,7 @@ void mnode::calcSmoothForces()
     } else {
         float normalDAngle = F_PI/180.f*(- fPitchFromLast * cos(fRoll*F_PI/180.) - temp*fYawFromLast*sin(fRoll*F_PI/180.));
         float lateralDAngle = F_PI/180.f*(fPitchFromLast * sin(fRoll*F_PI/180.) - temp*fYawFromLast*cos(fRoll*F_PI/180.));
-        forceVec = glm::vec3(0.f, 1.f, 0.f) + lateralDAngle*fVel*F_HZ/9.80665f * vLat + normalDAngle*fHeartDistFromLast*F_HZ*F_HZ/9.80665f * vNorm;
+        forceVec = glm::vec3(0.f, 1.f, 0.f) + lateralDAngle*fVel*F_HZ/F_G * vLat + normalDAngle*fHeartDistFromLast*F_HZ*F_HZ/F_G * vNorm;
     }
     smoothNormal = - glm::dot(forceVec, glm::normalize(vNorm)) - forceNormal;
     smoothLateral = - glm::dot(forceVec, glm::normalize(vLat)) - forceLateral;

@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@ secforced::secforced(track* getParent, mnode* first, float gettime): section(get
     this->iTime = (int)(gettime+0.5);
     this->length = 0.0;
     rollFunc->changeLength(1.f, 0);
-    normForce = new function(0, 1, this->lNodes[0]->forceNormal, this->lNodes[0]->forceNormal, this, funcNormal);
-    latForce = new function(0, 1, this->lNodes[0]->forceLateral, this->lNodes[0]->forceLateral, this, funcLateral);
+	normForce = new function(0, 1, this->lNodes[0].forceNormal, this->lNodes[0].forceNormal, this, funcNormal);
+	latForce = new function(0, 1, this->lNodes[0].forceLateral, this->lNodes[0].forceLateral, this, funcLateral);
 
     this->bOrientation = QUATERNION;
     this->bArgument = TIME;
@@ -70,29 +70,29 @@ int secforced::updateSection(int node)
     }
 
     if(node == 0) {
-        lNodes.at(0)->updateNorm();
+		lNodes[0].updateNorm();
 
-        float diff = lNodes.at(0)->forceNormal; // - normForce->funcList.at(0)->startValue;
+		float diff = lNodes[0].forceNormal; // - normForce->funcList.at(0)]-startValue;
         lenAssert(diff==diff);
         if(diff != diff) {
-            lNodes.append(new mnode(*(this->lNodes.at(0))));
+			lNodes.append(lNodes[0]);
             return node;
         }
         normForce->funcList.at(0)->translateValues(diff);
         normForce->translateValues(normForce->funcList.at(0));
 
-        diff = lNodes.at(0)->forceLateral; // - latForce->funcList.at(0)->startValue;
+		diff = lNodes[0].forceLateral; // - latForce->funcList.at(0)]-startValue;
         lenAssert(diff==diff);
         if(diff != diff) {
-            lNodes.append(new mnode(*(this->lNodes.at(0))));
+			lNodes.append(lNodes[0]);
             return node;
         }
         latForce->funcList.at(0)->translateValues(diff);
         latForce->translateValues(latForce->funcList.at(0));
 
-        diff = lNodes.at(0)->fRollSpeed; // - rollFunc->funcList.at(0)->startValue;
+		diff = lNodes[0].fRollSpeed; // - rollFunc->funcList.at(0)]-startValue;
         if(bOrientation == 1) {
-            diff += glm::dot(lNodes[0]->vDir, glm::vec3(0.f, 1.f, 0.f))*lNodes[0]->getYawChange();
+			diff += glm::dot(lNodes[0].vDir, glm::vec3(0.f, 1.f, 0.f))*lNodes[0].getYawChange();
         }
         rollFunc->funcList.at(0)->translateValues(diff);
         rollFunc->translateValues(rollFunc->funcList.at(0));
@@ -102,11 +102,11 @@ int secforced::updateSection(int node)
     for(i = node; i < numNodes; i++)
     {
         if(i >= lNodes.size()-1) {
-            lNodes.append(new mnode(*(this->lNodes.at(i))));
+			lNodes.append(lNodes[i]);
         }
 
-        mnode* prevNode = lNodes[i];
-        mnode* curNode = lNodes[i+1];
+		mnode* prevNode = &lNodes[i];
+		mnode* curNode = &lNodes[i+1];
         curNode->vPos = prevNode->vPos;
         curNode->fVel = prevNode->fVel;
         curNode->fEnergy = prevNode->fEnergy;
@@ -116,8 +116,8 @@ int secforced::updateSection(int node)
         curNode->forceNormal = normForce->getValue((i+1)/F_HZ);
         curNode->forceLateral = latForce->getValue((i+1)/F_HZ);
 
-        float nForce = - glm::dot(forceVec, glm::normalize(prevNode->vNorm))*9.80665f;
-        float lForce = - glm::dot(forceVec, glm::normalize(prevNode->vLat))*9.80665f;
+		float nForce = - glm::dot(forceVec, glm::normalize(prevNode->vNorm))*F_G;
+		float lForce = - glm::dot(forceVec, glm::normalize(prevNode->vLat))*F_G;
 
         float estVel = fabs(prevNode->fHeartDistFromLast) < std::numeric_limits<float>::epsilon() ? prevNode->fVel : prevNode->fHeartDistFromLast*F_HZ;
 
@@ -148,16 +148,14 @@ int secforced::updateSection(int node)
         calcDirFromLast(i+1);
         float temp = cos(fabs(curNode->getPitch())*F_PI/180.f);
         float forceAngle = sqrt(temp*temp*curNode->fYawFromLast*curNode->fYawFromLast + curNode->fPitchFromLast*curNode->fPitchFromLast);//deltaAngle;
-
-
         curNode->fAngleFromLast = forceAngle;
 
         if(bSpeed) {
             curNode->fEnergy -= (curNode->fVel*curNode->fVel*curNode->fVel/F_HZ * parent->fResistance);
-            curNode->fVel = sqrt(2.f*(curNode->fEnergy-9.80665f*(curNode->vPosHeart(parent->fHeart*0.9f).y+curNode->fTotalLength*parent->fFriction)));
+			curNode->fVel = sqrt(2.f*(curNode->fEnergy-F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y+curNode->fTotalLength*parent->fFriction)));
         } else {
             curNode->fVel = this->fVel;
-            curNode->fEnergy = 0.5*fVel*fVel + 9.80665f*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
+			curNode->fEnergy = 0.5*fVel*fVel + F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
         }
 
 
@@ -167,18 +165,18 @@ int secforced::updateSection(int node)
             float normalDAngle = F_PI/180.f*(- curNode->fPitchFromLast * cos(curNode->fRoll*F_PI/180.) - temp*curNode->fYawFromLast*sin(curNode->fRoll*F_PI/180.));
             float lateralDAngle = F_PI/180.f*(curNode->fPitchFromLast * sin(curNode->fRoll*F_PI/180.) - temp*curNode->fYawFromLast*cos(curNode->fRoll*F_PI/180.));
 
-            forceVec = glm::vec3(0.f, 1.f, 0.f) + lateralDAngle*curNode->fVel*F_HZ/9.80665f * curNode->vLat + normalDAngle*curNode->fHeartDistFromLast*F_HZ*F_HZ/9.80665f * curNode->vNorm;
+			forceVec = glm::vec3(0.f, 1.f, 0.f) + lateralDAngle*curNode->fVel*F_HZ/F_G * curNode->vLat + normalDAngle*curNode->fHeartDistFromLast*F_HZ*F_HZ/F_G * curNode->vNorm;
         }
         curNode->forceNormal = - glm::dot(forceVec, glm::normalize(curNode->vNorm));
         curNode->forceLateral = - glm::dot(forceVec, glm::normalize(curNode->vLat));
 
     }
     while(lNodes.size() > 1+i) {
-        delete lNodes.at(1+i);
+		//delete lNodes.at(1+i);
         lNodes.removeAt(1+i);
     }
     if(lNodes.size()) {
-        length = lNodes.last()->fTotalLength - lNodes.first()->fTotalLength;
+		length = lNodes.last().fTotalLength - lNodes.first().fTotalLength;
     } else {
         length = 0;
     }
@@ -193,8 +191,8 @@ int secforced::updateDistanceSection(int node)
     this->length = 0.f;
     float hDist = 0.f;
     while(length < (float)node/F_HZ && i+1 < lNodes.size()) {
-        hDist += lNodes[++i]->fHeartDistFromLast;
-        length += lNodes[i]->fDistFromLast;
+		hDist += lNodes[++i].fHeartDistFromLast;
+		length += lNodes[i].fDistFromLast;
     }
 
     if(i >= lNodes.size()-1 && i > 0) {
@@ -206,29 +204,29 @@ int secforced::updateDistanceSection(int node)
     }
 
     if(i == 0) {
-        lNodes.at(0)->updateNorm();
+		lNodes[0].updateNorm();
 
-        float diff = lNodes.at(0)->forceNormal; // - normForce->funcList.at(0)->startValue;
+		float diff = lNodes[0].forceNormal; // - normForce->funcList.at(0)]-startValue;
         lenAssert(diff==diff);
         if(diff != diff) {
-            lNodes.append(new mnode(*(this->lNodes.at(0))));
+			lNodes.append(lNodes[0]);
             return node;
         }
-        normForce->funcList.at(0)->translateValues(diff);
-        normForce->translateValues(normForce->funcList.at(0));
+		normForce->funcList[0]->translateValues(diff);
+		normForce->translateValues(normForce->funcList[0]);
 
-        diff = lNodes.at(0)->forceLateral; // - latForce->funcList.at(0)->startValue;
+		diff = lNodes[0].forceLateral; // - latForce->funcList.at(0)]-startValue;
         lenAssert(diff==diff);
         if(diff != diff) {
-            lNodes.append(new mnode(*(this->lNodes.at(0))));
+			lNodes.append(lNodes[0]);
             return node;
         }
         latForce->funcList.at(0)->translateValues(diff);
         latForce->translateValues(latForce->funcList.at(0));
 
-        diff = lNodes.at(0)->fRollSpeed/lNodes[0]->fVel; // - rollFunc->funcList.at(0)->startValue;
+		diff = lNodes[0].fRollSpeed/lNodes[0].fVel; // - rollFunc->funcList.at(0)]-startValue;
         if(bOrientation == 1) {
-            diff += glm::dot(lNodes[0]->vDir, glm::vec3(0.f, 1.f, 0.f))*lNodes[0]->getYawChange()/lNodes[0]->fVel;
+			diff += glm::dot(lNodes[0].vDir, glm::vec3(0.f, 1.f, 0.f))*lNodes[0].getYawChange()/lNodes[0].fVel;
         }
         rollFunc->funcList.at(0)->translateValues(diff);
         rollFunc->translateValues(rollFunc->funcList.at(0));
@@ -241,11 +239,11 @@ int secforced::updateDistanceSection(int node)
 
     while(length < end) {
         if(i >= lNodes.size()-1) {
-            lNodes.append(new mnode(*(this->lNodes.at(i))));
+			lNodes.append(lNodes[i]);
         }
 
-        mnode* prevNode = lNodes[i];
-        mnode* curNode = lNodes[i+1];
+		mnode* prevNode = &lNodes[i];
+		mnode* curNode = &lNodes[i+1];
         curNode->vPos = prevNode->vPos;
         curNode->fVel = prevNode->fVel;
         curNode->fEnergy = prevNode->fEnergy;
@@ -255,8 +253,8 @@ int secforced::updateDistanceSection(int node)
         curNode->forceNormal = normForce->getValue(length+prevNode->fVel/F_HZ);
         curNode->forceLateral = latForce->getValue(length+prevNode->fVel/F_HZ);
 
-        float nForce = - glm::dot(forceVec, glm::normalize(prevNode->vNorm))*9.80665;
-        float lForce = - glm::dot(forceVec, glm::normalize(prevNode->vLat))*9.80665*180/F_PI;
+		float nForce = - glm::dot(forceVec, glm::normalize(prevNode->vNorm))*F_G;
+		float lForce = - glm::dot(forceVec, glm::normalize(prevNode->vLat))*F_G;
 
         float estVel = fabs(prevNode->fHeartDistFromLast) < std::numeric_limits<float>::epsilon() ? prevNode->fVel : prevNode->fHeartDistFromLast*F_HZ;
 
@@ -270,12 +268,14 @@ int secforced::updateDistanceSection(int node)
         curNode->setRoll(rollFunc->getValue(length+curNode->fVel/F_HZ)*(curNode->fVel/F_HZ)); // - rollFunc->getValue(i/1000.f));
 
         curNode->fRollSpeed = 0.f;
-
-        if(bOrientation == EULER) {
-            calcDirFromLast(i+1);
+		curNode->setRoll(rollFunc->getValue(length+prevNode->fVel/F_HZ)/F_HZ); // - rollFunc->getValue(i/1000.f));
+		calcDirFromLast(i+1);
+		if(bOrientation == EULER) {
             curNode->setRoll(glm::dot(curNode->vDir, glm::vec3(0.f, -1.f, 0.f))*curNode->fYawFromLast);
             curNode->fRollSpeed += glm::dot(curNode->vDir, glm::vec3(0.f, -1.f, 0.f))*curNode->fYawFromLast*F_HZ;
         }
+
+		curNode->updateNorm();
 
         curNode->fDistFromLast = glm::distance(curNode->vPosHeart(parent->fHeart), prevNode->vPosHeart(parent->fHeart));
         curNode->fTotalLength = prevNode->fTotalLength + curNode->fDistFromLast;
@@ -290,10 +290,10 @@ int secforced::updateDistanceSection(int node)
 
         if(bSpeed) {
             curNode->fEnergy -= (curNode->fVel*curNode->fVel*curNode->fVel/F_HZ * parent->fResistance);
-            curNode->fVel = sqrt(2.f*(curNode->fEnergy-9.80665f*(curNode->vPosHeart(parent->fHeart*0.9f).y+curNode->fTotalLength*parent->fFriction)));
+			curNode->fVel = sqrt(2.f*(curNode->fEnergy-F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y+curNode->fTotalLength*parent->fFriction)));
         } else {
             curNode->fVel = this->fVel;
-            curNode->fEnergy = 0.5*fVel*fVel + 9.80665f*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
+			curNode->fEnergy = 0.5*fVel*fVel + F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
         }
 
         if(fabs(curNode->fAngleFromLast) < std::numeric_limits<float>::epsilon()) {
@@ -302,7 +302,7 @@ int secforced::updateDistanceSection(int node)
             float normalDAngle = F_PI/180.f*(- curNode->fPitchFromLast * cos(curNode->fRoll*F_PI/180.) - temp*curNode->fYawFromLast*sin(curNode->fRoll*F_PI/180.));
             float lateralDAngle = F_PI/180.f*(curNode->fPitchFromLast * sin(curNode->fRoll*F_PI/180.) - temp*curNode->fYawFromLast*cos(curNode->fRoll*F_PI/180.));
 
-            forceVec = glm::vec3(0.f, 1.f, 0.f) + lateralDAngle*curNode->fVel*F_HZ/9.80665f * curNode->vLat + normalDAngle*curNode->fHeartDistFromLast*F_HZ*F_HZ/9.80665f * curNode->vNorm;
+			forceVec = glm::vec3(0.f, 1.f, 0.f) + lateralDAngle*curNode->fVel*F_HZ/F_G * curNode->vLat + normalDAngle*curNode->fHeartDistFromLast*F_HZ*F_HZ/F_G * curNode->vNorm;
         }
         curNode->forceNormal = - glm::dot(forceVec, glm::normalize(curNode->vNorm));
         curNode->forceLateral = - glm::dot(forceVec, glm::normalize(curNode->vLat));
@@ -311,11 +311,11 @@ int secforced::updateDistanceSection(int node)
         ++i;
     }
     while(lNodes.size() > 1+i) {
-        delete lNodes.at(1+i);
+		//delete lNodes.at(1+i);
         lNodes.removeAt(1+i);
     }
     if(lNodes.size()) {
-        length = lNodes.last()->fTotalLength - lNodes.first()->fTotalLength;
+		length = lNodes.last().fTotalLength - lNodes.first().fTotalLength;
     } else {
         length = 0;
     }
@@ -435,7 +435,7 @@ bool secforced::isInFunction(int index, subfunction* func)
         float dist = 0;
         if(index >= lNodes.size()) return false;
         for(int i = 1; i <= index; ++i) {
-            dist += lNodes[i]->fHeartDistFromLast;
+			dist += lNodes[i].fHeartDistFromLast;
         }
         if(dist >= func->minArgument && dist <= func->maxArgument) {
             return true;

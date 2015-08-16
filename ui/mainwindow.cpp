@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -529,8 +529,8 @@ void MainWindow::updateInfoPanel()
     temp->updateSectionFrame();
     mnode* lastnode;
     if(curTrack()->lSections.size() != 0 && curTrack()->activeSection != NULL) {
-        lastnode = curTrack()->activeSection->lNodes.at(curTrack()->activeSection->lNodes.size()-1);
-    } else {
+		lastnode = &curTrack()->activeSection->lNodes[curTrack()->activeSection->lNodes.size()-1];
+	} else {
         lastnode = curTrack()->anchorNode;
     }
     updateInfoPanel(lastnode);

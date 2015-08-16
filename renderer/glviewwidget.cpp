@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -1507,10 +1507,10 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
         for(int j = 0; j < curSection->lNodes.size(); ++j)
         {
             float distFromLastNode = 1.f;
-            float angle = curSection->lNodes.at(j)->fFlexion();
+			float angle = curSection->lNodes[j].fFlexion();
             angle /= angleNodeDist;
             angle = std::min(std::max(1.f/minNodeDist, angle), 1.f/maxNodeDist);
-            angle *= curSection->lNodes.at(j)->fDistFromLast;;
+			angle *= curSection->lNodes[j].fDistFromLast;;
             distFromLastNode += angle;
             if(distFromLastNode >= 1.f || j == curSection->lNodes.size()-1)
             {
@@ -1523,13 +1523,13 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
                     distFromLastNode = 0.f;
                 }
 
-                curPos = anchorBase * glm::vec4(curSection->lNodes.at(j)->vPosHeart(myTrack->fHeart+fSpine), 1.f);
-                glVertex3f(curPos.x, curPos.y, curPos.z);
+				curPos = anchorBase * glm::vec4(curSection->lNodes[j].vPosHeart(myTrack->fHeart+fSpine), 1.f);
+				glVertex3f(curPos.x, curPos.y, curPos.z);
             }
         }
         int end = curSection->lNodes.size()-1;
-        curPos = anchorBase * glm::vec4(curSection->lNodes.at(end)->vPosHeart(myTrack->fHeart+fSpine), 1.f);
-        glVertex3f(curPos.x, curPos.y, curPos.z);
+		curPos = anchorBase * glm::vec4(curSection->lNodes[end].vPosHeart(myTrack->fHeart+fSpine), 1.f);
+		glVertex3f(curPos.x, curPos.y, curPos.z);
         glEnd();
     }
 
@@ -1542,10 +1542,10 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
         for(int j = 0; j < curSection->lNodes.size(); ++j)
         {
             float distFromLastNode = 1.f;
-            float angle = curSection->lNodes.at(j)->fFlexion();
+			float angle = curSection->lNodes[j].fFlexion();
             angle /= angleNodeDist;
             angle = std::min(std::max(1.f/minNodeDist, angle), 1.f/maxNodeDist);
-            angle *= curSection->lNodes.at(j)->fDistFromLast;;
+			angle *= curSection->lNodes[j].fDistFromLast;;
             distFromLastNode += angle;
             if(distFromLastNode >= 1.f || j == curSection->lNodes.size()-1)
             {
@@ -1558,13 +1558,13 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
                     distFromLastNode = 0.f;
                 }
 
-                curPos = anchorBase * glm::vec4(curSection->lNodes.at(j)->vPosHeart(myTrack->fHeart+fSpine), 1.f);
-                glVertex3f(curPos.x, 0.f, curPos.z);
+				curPos = anchorBase * glm::vec4(curSection->lNodes[j].vPosHeart(myTrack->fHeart+fSpine), 1.f);
+				glVertex3f(curPos.x, 0.f, curPos.z);
             }
         }
         int end = curSection->lNodes.size()-1;
-        curPos = anchorBase * glm::vec4(curSection->lNodes.at(end)->vPosHeart(myTrack->fHeart+fSpine), 1.f);
-        glVertex3f(curPos.x, 0.f, curPos.z);
+		curPos = anchorBase * glm::vec4(curSection->lNodes[end].vPosHeart(myTrack->fHeart+fSpine), 1.f);
+		glVertex3f(curPos.x, 0.f, curPos.z);
         glEnd();
     }
 
@@ -1585,10 +1585,10 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
         for(int j = 0; j < curSection->lNodes.size(); ++j)
         {
             float distFromLastNode = 1.f;
-            float angle = curSection->lNodes.at(j)->fFlexion();
+			float angle = curSection->lNodes[j].fFlexion();
             angle /= angleNodeDist;
             angle = std::min(std::max(1.f/minNodeDist, angle), 1.f/maxNodeDist);
-            angle *= curSection->lNodes.at(j)->fDistFromLast;;
+			angle *= curSection->lNodes[j].fDistFromLast;;
             distFromLastNode += angle;
             if(distFromLastNode >= 1.f || j == curSection->lNodes.size()-1)
             {
@@ -1601,13 +1601,13 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
                     distFromLastNode = 0.f;
                 }
 
-                curPos = anchorBase * glm::vec4(curSection->lNodes.at(j)->vPosHeart(myTrack->fHeart)+curSection->lNodes.at(j)->vLatHeart(myTrack->fHeart)*0.5f, 1.f);
-                glVertex3f(curPos.x, curPos.y, curPos.z);
+				curPos = anchorBase * glm::vec4(curSection->lNodes[j].vPosHeart(myTrack->fHeart)+curSection->lNodes[j].vLatHeart(myTrack->fHeart)*0.5f, 1.f);
+				glVertex3f(curPos.x, curPos.y, curPos.z);
             }
         }
         int end = curSection->lNodes.size()-1;
-        curPos = anchorBase * glm::vec4(curSection->lNodes.at(end)->vPosHeart(myTrack->fHeart)+curSection->lNodes.at(end)->vLatHeart(myTrack->fHeart)*0.5f, 1.f);
-        glVertex3f(curPos.x, curPos.y, curPos.z);
+		curPos = anchorBase * glm::vec4(curSection->lNodes[end].vPosHeart(myTrack->fHeart)+curSection->lNodes[end].vLatHeart(myTrack->fHeart)*0.5f, 1.f);
+		glVertex3f(curPos.x, curPos.y, curPos.z);
         glEnd();
     }
 
@@ -1629,10 +1629,10 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
         for(int j = 0; j < curSection->lNodes.size(); ++j)
         {
             float distFromLastNode = 1.f;
-            float angle = curSection->lNodes.at(j)->fFlexion();
+			float angle = curSection->lNodes[j].fFlexion();
             angle /= angleNodeDist;
             angle = std::min(std::max(1.f/minNodeDist, angle), 1.f/maxNodeDist);
-            angle *= curSection->lNodes.at(j)->fDistFromLast;;
+			angle *= curSection->lNodes[j].fDistFromLast;;
             distFromLastNode += angle;
             if(distFromLastNode >= 1.f || j == curSection->lNodes.size()-1)
             {
@@ -1645,13 +1645,13 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
                     distFromLastNode = 0.f;
                 }
 
-                curPos = anchorBase * glm::vec4(curSection->lNodes.at(j)->vPosHeart(myTrack->fHeart)-curSection->lNodes.at(j)->vLatHeart(myTrack->fHeart)*0.5f, 1.f);
-                glVertex3f(curPos.x, curPos.y, curPos.z);
+				curPos = anchorBase * glm::vec4(curSection->lNodes[j].vPosHeart(myTrack->fHeart)-curSection->lNodes[j].vLatHeart(myTrack->fHeart)*0.5f, 1.f);
+				glVertex3f(curPos.x, curPos.y, curPos.z);
             }
         }
         int end = curSection->lNodes.size()-1;
-        curPos = anchorBase * glm::vec4(curSection->lNodes.at(end)->vPosHeart(myTrack->fHeart)-curSection->lNodes.at(end)->vLatHeart(myTrack->fHeart)*0.5f, 1.f);
-        glVertex3f(curPos.x, curPos.y, curPos.z);
+		curPos = anchorBase * glm::vec4(curSection->lNodes[end].vPosHeart(myTrack->fHeart)-curSection->lNodes[end].vLatHeart(myTrack->fHeart)*0.5f, 1.f);
+		glVertex3f(curPos.x, curPos.y, curPos.z);
         glEnd();
     }
 
@@ -1671,17 +1671,17 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
         }
         for(int j = 0; j < curSection->lNodes.size(); j++)
         {
-            distFromLastX += curSection->lNodes.at(j)->fDistFromLast;
-            if(distFromLastX >= 1.0f)
-            {
-                distFromLastX -= 1.0f;
-                glBegin(GL_LINE_STRIP);
-                curPos = anchorBase * glm::vec4(curSection->lNodes.at(j)->vPosHeart(myTrack->fHeart)-curSection->lNodes.at(j)->vLatHeart(myTrack->fHeart)*0.5f, 1.f);
-                glVertex3f(curPos.x, curPos.y, curPos.z);
-                curPos = anchorBase * glm::vec4(curSection->lNodes.at(j)->vPosHeart(myTrack->fHeart+fSpine), 1.f);
-                glVertex3f(curPos.x, curPos.y, curPos.z);
-                curPos = anchorBase * glm::vec4(curSection->lNodes.at(j)->vPosHeart(myTrack->fHeart)+curSection->lNodes.at(j)->vLatHeart(myTrack->fHeart)*0.5f, 1.f);
-                glVertex3f(curPos.x, curPos.y, curPos.z);
+			distFromLastX += curSection->lNodes[j].fDistFromLast;
+			if(distFromLastX >= 1.0f)
+			{
+				distFromLastX -= 1.0f;
+				glBegin(GL_LINE_STRIP);
+				curPos = anchorBase * glm::vec4(curSection->lNodes[j].vPosHeart(myTrack->fHeart)-curSection->lNodes[j].vLatHeart(myTrack->fHeart)*0.5f, 1.f);
+				glVertex3f(curPos.x, curPos.y, curPos.z);
+				curPos = anchorBase * glm::vec4(curSection->lNodes[j].vPosHeart(myTrack->fHeart+fSpine), 1.f);
+				glVertex3f(curPos.x, curPos.y, curPos.z);
+				curPos = anchorBase * glm::vec4(curSection->lNodes[j].vPosHeart(myTrack->fHeart)+curSection->lNodes[j].vLatHeart(myTrack->fHeart)*0.5f, 1.f);
+				glVertex3f(curPos.x, curPos.y, curPos.z);
                 glEnd();
             }
         }
@@ -1704,10 +1704,10 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
             for(int j = 0; j < curSection->lNodes.size(); ++j)
             {
                 float distFromLastNode = 1.f;
-                float angle = curSection->lNodes.at(j)->fFlexion();
+				float angle = curSection->lNodes[j].fFlexion();
                 angle /= angleNodeDist;
                 angle = std::min(std::max(1.f/minNodeDist, angle), 1.f/maxNodeDist);
-                angle *= curSection->lNodes.at(j)->fDistFromLast;;
+				angle *= curSection->lNodes[j].fDistFromLast;;
                 distFromLastNode += angle;
                 if(distFromLastNode >= 1.f || j == curSection->lNodes.size()-1)
                 {
@@ -1720,12 +1720,12 @@ void glViewWidget::legacyDrawTrack(trackHandler *_track)
                         distFromLastNode = 0.f;
                     }
 
-                    curPos = anchorBase * glm::vec4(curSection->lNodes.at(j)->vPos, 1.f);
+					curPos = anchorBase * glm::vec4(curSection->lNodes[j].vPos, 1.f);
                     glVertex3f(curPos.x, curPos.y, curPos.z);
                 }
             }
             int end = curSection->lNodes.size()-1;
-            curPos = anchorBase * glm::vec4(curSection->lNodes.at(end)->vPos, 1.f);
+			curPos = anchorBase * glm::vec4(curSection->lNodes[end].vPos, 1.f);
             glVertex3f(curPos.x, curPos.y, curPos.z);
             glEnd();
         }

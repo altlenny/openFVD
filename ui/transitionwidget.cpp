@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ void transitionWidget::changeSubfunction(subfunction *_newSubfunc)
     }
 
     // HACK: is there a more stable way to do this?
-    if((_newSubfunc->parent->secParent->type == forced || _newSubfunc->parent->secParent->type == geometric)
+	/*if((_newSubfunc->parent->secParent->type == forced || _newSubfunc->parent->secParent->type == geometric)
       && _newSubfunc->parent->type == funcRoll
       && _newSubfunc->parent->secParent->bArgument == TIME
       && ui->transitionBox->count() == 7)
@@ -108,7 +108,7 @@ void transitionWidget::changeSubfunction(subfunction *_newSubfunc)
       && ui->transitionBox->count() == 8)
     {
         ui->transitionBox->removeItem(7);
-    }
+	}*/
 
 
     ui->buttonFrame->show();

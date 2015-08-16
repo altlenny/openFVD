@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -55,9 +55,9 @@ int seccurved::updateSection(int)
     fAngle = getMaxArgument();
 
     while(lNodes.size() > 1) {
-        if(lNodes.size() > 2 || parent->lSections.at(parent->lSections.size()-1) == this) {
+		/*if(lNodes.size() > 2 || parent->lSections.at(parent->lSections.size()-1) == this) {
             delete lNodes.at(1);
-        }
+		}*/
         lNodes.removeAt(1);
         lAngles.removeAt(1);
     }
@@ -67,11 +67,11 @@ int seccurved::updateSection(int)
         lAngles.append(0.f);
     }
     lAngles[0] = 0.f;
-    lNodes.at(0)->updateNorm();
+	lNodes[0].updateNorm();
 
-    float diff = lNodes.at(0)->fRollSpeed; // - rollFunc->funcList.at(0)->startValue;
+	float diff = lNodes[0].fRollSpeed; // - rollFunc->funcList.at(0)]-startValue;
     if(bOrientation == 1) {
-        diff += glm::dot(lNodes[0]->vDir, glm::vec3(0.f, 1.f, 0.f))*lNodes[0]->getYawChange();
+		diff += glm::dot(lNodes[0].vDir, glm::vec3(0.f, 1.f, 0.f))*lNodes[0].getYawChange();
     }
     rollFunc->funcList.at(0)->translateValues(diff);
     rollFunc->translateValues(rollFunc->funcList.at(0));
@@ -83,11 +83,11 @@ int seccurved::updateSection(int)
 
         float deltaAngle, fTrans;
 
-        mnode* prevNode = lNodes[numNodes-1];
+		mnode* prevNode = &lNodes[numNodes-1];
 
         deltaAngle = prevNode->fVel / fRadius / F_HZ * 180/F_PI;
 
-        if(fLeadIn > 0.f && (fTrans = (prevNode->fTotalLength - lNodes[0]->fTotalLength)/(1.997f/F_HZ*prevNode->fVel/deltaAngle * fLeadIn)) <= 1.f) {
+		if(fLeadIn > 0.f && (fTrans = (prevNode->fTotalLength - lNodes[0].fTotalLength)/(1.997f/F_HZ*prevNode->fVel/deltaAngle * fLeadIn)) <= 1.f) {
             deltaAngle *= fTrans*fTrans*(3+fTrans*(-2));
         }
 
@@ -103,9 +103,9 @@ int seccurved::updateSection(int)
             }
         }
 
-        lNodes.append(new mnode(*(prevNode)));
+		lNodes.append(*prevNode);
 
-        mnode* curNode = lNodes[numNodes];
+		mnode* curNode = &lNodes[numNodes];
 
         if(curNode->fVel < 0.1f) {
             qWarning("train goes very slowly");
@@ -137,9 +137,9 @@ int seccurved::updateSection(int)
 
         if(bOrientation == EULER) {
             calcDirFromLast(numNodes);
-            lNodes[numNodes]->setRoll(glm::dot(lNodes[numNodes]->vDir, glm::vec3(0.f, -1.f, 0.f))*lNodes[numNodes]->fYawFromLast);
-            artificialRoll += glm::dot(lNodes[numNodes]->vDir, glm::vec3(0.f, -1.f, 0.f))*lNodes[numNodes]->fYawFromLast;
-            curNode->fRollSpeed += glm::dot(lNodes[numNodes]->vDir, glm::vec3(0.f, -1.f, 0.f))*lNodes[numNodes]->fYawFromLast*F_HZ;
+			lNodes[numNodes].setRoll(glm::dot(lNodes[numNodes].vDir, glm::vec3(0.f, -1.f, 0.f))*lNodes[numNodes].fYawFromLast);
+			artificialRoll += glm::dot(lNodes[numNodes].vDir, glm::vec3(0.f, -1.f, 0.f))*lNodes[numNodes].fYawFromLast;
+			curNode->fRollSpeed += glm::dot(lNodes[numNodes].vDir, glm::vec3(0.f, -1.f, 0.f))*lNodes[numNodes].fYawFromLast*F_HZ;
         }
 
 
@@ -147,10 +147,10 @@ int seccurved::updateSection(int)
 
         if(bSpeed) {
             curNode->fEnergy -= (curNode->fVel*curNode->fVel*curNode->fVel/F_HZ * parent->fResistance);
-            curNode->fVel = sqrt(2.f*(curNode->fEnergy-9.80665f*(curNode->vPosHeart(parent->fHeart*0.9f).y+curNode->fTotalLength*parent->fFriction)));
+            curNode->fVel = sqrt(2.f*(curNode->fEnergy-F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y+curNode->fTotalLength*parent->fFriction)));
         } else {
             curNode->fVel = this->fVel;
-            curNode->fEnergy = 0.5*fVel*fVel + 9.80665f*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
+            curNode->fEnergy = 0.5*fVel*fVel + F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
         }
 
 
@@ -168,7 +168,7 @@ int seccurved::updateSection(int)
 
         calcDirFromLast(numNodes);
 
-        float temp = cos(fabs(lNodes[numNodes]->getPitch())*F_PI/180.f);
+		float temp = cos(fabs(lNodes[numNodes].getPitch())*F_PI/180.f);
         float forceAngle = sqrt(temp*temp*curNode->fYawFromLast*curNode->fYawFromLast + curNode->fPitchFromLast*curNode->fPitchFromLast);//deltaAngle;
         curNode->fAngleFromLast = forceAngle;
 
@@ -179,7 +179,7 @@ int seccurved::updateSection(int)
             float normalDAngle = F_PI/180.f*(- curNode->fPitchFromLast * cos(curNode->fRoll*F_PI/180.) - temp*curNode->fYawFromLast*sin(curNode->fRoll*F_PI/180.));
             float lateralDAngle = F_PI/180.f*(curNode->fPitchFromLast * sin(curNode->fRoll*F_PI/180.) - temp*curNode->fYawFromLast*cos(curNode->fRoll*F_PI/180.));
 
-            forceVec = glm::vec3(0.f, 1.f, 0.f) + lateralDAngle*curNode->fVel*F_HZ/9.80665f * curNode->vLat + normalDAngle*curNode->fHeartDistFromLast*F_HZ*F_HZ/9.80665f * curNode->vNorm;
+            forceVec = glm::vec3(0.f, 1.f, 0.f) + lateralDAngle*curNode->fVel*F_HZ/F_G * curNode->vLat + normalDAngle*curNode->fHeartDistFromLast*F_HZ*F_HZ/F_G * curNode->vNorm;
         }
 
         curNode->forceNormal = - glm::dot(forceVec, glm::normalize(curNode->vNorm));
@@ -188,11 +188,11 @@ int seccurved::updateSection(int)
         numNodes++;
     }
     if(fLeadOut > 0.0001f) {
-        lNodes.last()->fAngleFromLast = 0.f;
-        lNodes.last()->fPitchFromLast = 0.f;
-        lNodes.last()->fYawFromLast = 0.f;
+		lNodes.last().fAngleFromLast = 0.f;
+		lNodes.last().fPitchFromLast = 0.f;
+		lNodes.last().fYawFromLast = 0.f;
     }
-    if(lNodes.size()) length = lNodes.last()->fTotalLength - lNodes.first()->fTotalLength;
+	if(lNodes.size()) length = lNodes.last().fTotalLength - lNodes.first().fTotalLength;
     else length = 0;
     return 0;
 }

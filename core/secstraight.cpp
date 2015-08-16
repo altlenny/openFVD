@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -49,14 +49,14 @@ int secstraight::updateSection(int)
     fHLength = getMaxArgument();
 
     while(lNodes.size() > 1) {
-        if(lNodes.size() > 2 || this->parent->lSections.at(this->parent->lSections.size()-1) == this) {
+		/*if(lNodes.size() > 2 || this->parent->lSections.at(this->parent->lSections.size()-1) == this) {
             delete lNodes.at(1);
-        }
+		}*/
         lNodes.removeAt(1);
     }
-    lNodes.at(0)->updateNorm();
+	lNodes[0].updateNorm();
 
-    float diff = lNodes.at(0)->fRollSpeed; // - rollFunc->funcList.at(0)->startValue;
+	float diff = lNodes[0].fRollSpeed; // - rollFunc->funcList.at(0)]-startValue;
     rollFunc->funcList.at(0)->translateValues(diff);
     rollFunc->translateValues(rollFunc->funcList.at(0));
 
@@ -65,11 +65,11 @@ int secstraight::updateSection(int)
     float fCurLength = 0.0f;
 
     while(fCurLength < this->fHLength - std::numeric_limits<float>::epsilon() && !lastNode) {
-        lNodes.append(new mnode(*(this->lNodes.at(numNodes-1))));
+		lNodes.append(lNodes.last());
 
         float dTime;
-        mnode* prevNode = lNodes[numNodes-1];
-        mnode* curNode = lNodes[numNodes];
+		mnode* prevNode = &lNodes[numNodes-1];
+		mnode* curNode = &lNodes[numNodes];
 
         if(curNode->fVel < 0.1f) {
             qWarning("train goes very slowly");
@@ -103,23 +103,23 @@ int secstraight::updateSection(int)
         curNode->fDirFromLast = 0.0;
         curNode->fYawFromLast = 0.0;
         curNode->fPitchFromLast = 0.0;
-        if(fabs(lNodes[numNodes]->fRollSpeed) < 0.001) {
+		if(fabs(lNodes[numNodes].fRollSpeed) < 0.001) {
             curNode->fTrackAngleFromLast = 0.0;
         }
 
         if(bSpeed) {
             curNode->fEnergy -= (curNode->fVel*curNode->fVel*curNode->fVel/F_HZ * parent->fResistance);
-            curNode->fVel = sqrt(2.f*(curNode->fEnergy-9.80665f*(curNode->vPosHeart(parent->fHeart*0.9f).y+curNode->fTotalLength*parent->fFriction)));
+            curNode->fVel = sqrt(2.f*(curNode->fEnergy-F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y+curNode->fTotalLength*parent->fFriction)));
         } else {
             curNode->fVel = this->fVel;
-            curNode->fEnergy = 0.5*fVel*fVel + 9.80665f*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
+            curNode->fEnergy = 0.5*fVel*fVel + F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
         }
 
         this->length += curNode->fDistFromLast;
         ++numNodes;
     }
 
-    if(lNodes.size()) length = lNodes.last()->fTotalLength - lNodes.first()->fTotalLength;
+	if(lNodes.size()) length = lNodes.last().fTotalLength - lNodes.first().fTotalLength;
     else length = 0;
 
     //qDebug("Straight section Length:%f", this->length);
@@ -206,7 +206,7 @@ bool secstraight::isInFunction(int index, subfunction* func)
 {
     if(func == NULL) return false;
     if(index >= lNodes.size()) return false;
-    float dist = lNodes[index]->fTotalHeartLength - lNodes[0]->fTotalHeartLength;
+	float dist = lNodes[index].fTotalHeartLength - lNodes[0].fTotalHeartLength;
     if(dist >= func->minArgument && dist <= func->maxArgument) {
         return true;
     }

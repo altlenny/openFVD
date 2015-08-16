@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -340,29 +340,29 @@ void graphHandler::fillActiveGraphList(QCPAxis *xAxis, bool _argument, bool _dra
                 if(_argument == TIME) {
                     x.append(key/F_HZ+n);
                 } else {
-                    x.append(curTrack->activeSection->lNodes[key]->fTotalLength);
+					x.append(curTrack->activeSection->lNodes[key].fTotalLength);
                 }
 
                 switch(mType)
                 {
                 case rollSpeed:
                     if(curTrack->activeSection->bOrientation == EULER) {
-                        y.append(curTrack->activeSection->lNodes[key]->fRollSpeed + sin(curTrack->activeSection->lNodes[key]->getPitch()*F_PI/180.)*curTrack->activeSection->lNodes[key]->getYawChange());
+						y.append(curTrack->activeSection->lNodes[key].fRollSpeed + sin(curTrack->activeSection->lNodes[key].getPitch()*F_PI/180.)*curTrack->activeSection->lNodes[key].getYawChange());
                     } else {
-                        y.append(curTrack->activeSection->lNodes[key]->fRollSpeed);
+						y.append(curTrack->activeSection->lNodes[key].fRollSpeed);
                     }
                     break;
                 case nForce:
-                    y.append(curTrack->activeSection->lNodes[key]->forceNormal);
+					y.append(curTrack->activeSection->lNodes[key].forceNormal);
                     break;
                 case lForce:
-                    y.append(curTrack->activeSection->lNodes[key]->forceLateral);
+					y.append(curTrack->activeSection->lNodes[key].forceLateral);
                     break;
                 case pitchChange:
-                    y.append(curTrack->activeSection->lNodes[key]->getPitchChange());
+					y.append(curTrack->activeSection->lNodes[key].getPitchChange());
                     break;
                 case yawChange:
-                    y.append(curTrack->activeSection->lNodes[key]->getYawChange());
+					y.append(curTrack->activeSection->lNodes[key].getYawChange());
                     break;
                 default:
                     break;
@@ -370,7 +370,7 @@ void graphHandler::fillActiveGraphList(QCPAxis *xAxis, bool _argument, bool _dra
             }
         } else {
             if(_argument == DISTANCE) {
-                n = curTrack->activeSection->lNodes[0]->fTotalLength;
+				n = curTrack->activeSection->lNodes[0].fTotalLength;
             }
             for(int j = 0; j < 251; ++j) {
                 double maxArg;
@@ -427,8 +427,8 @@ void graphHandler::fillBoundaryGraphList(QCPAxis *xAxis, bool _argument)
             n1 = curTrack->getNumPoints(mTrack->trackData->lSections[i])/F_HZ;
             n2 = n1 + (mTrack->trackData->lSections[i]->lNodes.size()-1)/F_HZ;
         } else {
-            n1 = curTrack->lSections[i]->lNodes[0]->fTotalLength;
-            n2 = curTrack->lSections[i]->lNodes.last()->fTotalLength;
+			n1 = curTrack->lSections[i]->lNodes[0].fTotalLength;
+			n2 = curTrack->lSections[i]->lNodes.last().fTotalLength;
         }
         //if(curTrack->lSections.size()-1 == i) --n2;
 

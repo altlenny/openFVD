@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -649,7 +649,7 @@ void graphWidget::setBezPoints()
         if(selFunc->parent->secParent->bArgument == TIME) {
             until = selTrack->trackData->getNumPoints(selFunc->parent->secParent)/F_HZ;
         } else {
-            until = selFunc->parent->secParent->lNodes.first()->fTotalHeartLength;
+			until = selFunc->parent->secParent->lNodes.first().fTotalHeartLength;
         }
         int x1 = ui->plotter->xAxis->coordToPixel(selFunc->minArgument+until);
         int x2 = ui->plotter->xAxis->coordToPixel(selFunc->maxArgument+until);

@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ trackMesh::trackMesh(track* parent)
     heartlineSize = 0;
     railShadowSize = 0;
     trackData = parent;
-    isWireframe = true;
+	isWireframe = false;
 }
 
 trackMesh::~trackMesh()
@@ -136,7 +136,7 @@ int trackMesh::createPipes(QVector<tracknode_t> &list, QList<pipeoption_t> &opti
         {
             j = 0;
             curSection = trackData->lSections[0];
-            curNode = curSection->lNodes[0];
+			curNode = &curSection->lNodes[0];
             nextNorm = -curNode->vDirHeart(-options[p].offset.y);
             nextPos = curNode->vRelPos(options[p].offset.y, options[p].offset.x);
             nextNode = 0;
@@ -156,7 +156,7 @@ int trackMesh::createPipes(QVector<tracknode_t> &list, QList<pipeoption_t> &opti
 
                 j = posList[pos];
                 curSection = trackData->lSections[secList[pos]];
-                curNode = curSection->lNodes[j];
+				curNode = &curSection->lNodes[j];
 
                 nextNorm = -(float)(options[p].radius.y*cos(angle*F_PI/180))*curNode->vNorm+(float)(options[p].radius.x*sin(angle*F_PI/180))*curNode->vLatHeart(-options[p].offset.y);
                 nextPos = curNode->vRelPos(options[p].offset.y, options[p].offset.x)+nextNorm;
@@ -183,7 +183,7 @@ int trackMesh::createPipes(QVector<tracknode_t> &list, QList<pipeoption_t> &opti
         {
             j = posList.last();
             curSection = trackData->lSections[secList.last()];
-            curNode = curSection->lNodes[j];
+			curNode = &curSection->lNodes[j];
 
             nextNorm = curNode->vDirHeart(-options[p].offset.y);
             nextPos = curNode->vRelPos(options[p].offset.y, options[p].offset.x);
@@ -201,7 +201,7 @@ int trackMesh::createPipes(QVector<tracknode_t> &list, QList<pipeoption_t> &opti
         {
             j = posList[i];
             curSection = trackData->lSections[secList[i]];
-            curNode = curSection->lNodes[j];
+			curNode = &curSection->lNodes[j];
             nextNode = trackData->getNumPoints(curSection) + j;
 
             float banking = glm::atan(curNode->vLatHeart(-options[p].offset.y).y, -curNode->vNorm.y)+F_PI_2+0.001;
@@ -269,7 +269,7 @@ int trackMesh::create3dsPipes(QVector<float> *_vertices, QList<pipeoption_t> &op
         {
             j = posList[0];
             curSection = trackData->lSections[secList[0]];
-            curNode = curSection->lNodes[j];
+			curNode = &curSection->lNodes[j];
             nextNorm = -curNode->vDirHeart(-options[p].offset.y);
             nextPos = curNode->vRelPos(options[p].offset.y, options[p].offset.x);
             nextNode = trackData->getNumPoints(curSection) + j;
@@ -285,8 +285,8 @@ int trackMesh::create3dsPipes(QVector<float> *_vertices, QList<pipeoption_t> &op
                 else angle = (i/2)*720.f/options[p].edges - 360.f/options[p].edges;
 
                 j = posList[pos];
-                curSection = trackData->lSections[secList[pos]];
-                curNode = curSection->lNodes[j];
+				curSection = trackData->lSections[secList[pos]];
+				curNode = &curSection->lNodes[j];
 
                 nextNorm = -(float)(options[p].radius.y*cos(angle*F_PI/180))*curNode->vNorm+(float)(options[p].radius.x*sin(angle*F_PI/180))*curNode->vLatHeart(-options[p].offset.y);
                 nextPos = curNode->vRelPos(options[p].offset.y, options[p].offset.x)+nextNorm;
@@ -310,7 +310,7 @@ int trackMesh::create3dsPipes(QVector<float> *_vertices, QList<pipeoption_t> &op
         {
             j = posList.last();
             curSection = trackData->lSections[secList.last()];
-            curNode = curSection->lNodes[j];
+			curNode = &curSection->lNodes[j];
 
             nextNorm = curNode->vDirHeart(-options[p].offset.y);
             nextPos = curNode->vRelPos(options[p].offset.y, options[p].offset.x);
@@ -338,7 +338,7 @@ int trackMesh::createPipe(QVector<tracknode_t> &list, int edges, float radiusy, 
             j = posList[i];
             curSection = trackData->lSections[secList[i]];
 
-            curNode = curSection->lNodes[j];
+			curNode = &curSection->lNodes[j];
 
             if((i == 0 && iteration%2==0) || (i == posList.size()-1 && iteration%2!=0))
             {
@@ -424,7 +424,7 @@ int trackMesh::createPipe(QVector<tracknode_t> &list, int edges, float radiusy, 
         j = posList[i];
         curSection = trackData->lSections[secList[i]];
 
-        curNode = curSection->lNodes[j];
+		curNode = &curSection->lNodes[j];
 
         P5 = P1;
         P6 = P2;
@@ -1268,10 +1268,10 @@ void trackMesh::buildMeshes(int fromNode)
             for(; j < curSection->lNodes.size(); ++j)
             {
                 if(i != 0 && j == 1) distFromLastNode = 1.f;
-                float angle = curSection->lNodes.at(j)->fFlexion();
+				float angle = curSection->lNodes[(j)].fFlexion();
                 angle /= angleNodeDist;
                 angle = std::min(std::max(1.f/minNodeDist, angle), 1.f/maxNodeDist);
-                angle *= curSection->lNodes.at(j)->fDistFromLast;;
+				angle *= curSection->lNodes[(j)].fDistFromLast;;
                 distFromLastNode += angle;
                 if(distFromLastNode >= 1.f || j == curSection->lNodes.size()-1)
                 {
@@ -1323,7 +1323,7 @@ void trackMesh::buildMeshes(int fromNode)
         {
             j = posList[i];
             section* curSection = trackData->lSections[secList[i]];
-            curNode = curSection->lNodes[j];
+			curNode = &curSection->lNodes[j];
 
             heartlineSize += 1;
 
@@ -1447,7 +1447,7 @@ void trackMesh::buildMeshes(int fromNode)
             section* curSection = trackData->lSections[i];
             for(; j < curSection->lNodes.size(); ++j)
             {
-                distFromLastNode += curSection->lNodes.at(j)->fDistFromLast;
+				distFromLastNode += curSection->lNodes[(j)].fDistFromLast;
                 if(distFromLastNode >= crosstieSpacing)
                 {
                     distFromLastNode -= crosstieSpacing;
@@ -1510,7 +1510,7 @@ void trackMesh::buildMeshes(int fromNode)
             j = posList[i];
             curSection = trackData->lSections[secList[i]];
             lastNode = curNode;
-            curNode = curSection->lNodes[j];
+			curNode = &curSection->lNodes[j];
             nextNode = trackData->getNumPoints(curSection) + j;
 
             /* CROSSTIE GENERATION */
@@ -2123,10 +2123,10 @@ void trackMesh::buildMeshes(int fromNode)
             for(; j < curSection->lNodes.size(); ++j)
             {
                 if(i != 0 && j == 1) distFromLastNode = 1.f;
-                float angle = curSection->lNodes.at(j)->fFlexion();
+				float angle = curSection->lNodes[(j)].fFlexion();
                 angle /= angleNodeDist;
                 angle = std::min(std::max(1.f/minNodeDist, angle), 1.f/maxNodeDist);
-                angle *= curSection->lNodes.at(j)->fDistFromLast;;
+				angle *= curSection->lNodes[(j)].fDistFromLast;;
                 distFromLastNode += angle;
                 if(distFromLastNode >= 1.f || j == curSection->lNodes.size()-1)
                 {
@@ -2170,7 +2170,7 @@ void trackMesh::buildMeshes(int fromNode)
         {
             j = posList[i];
             section* curSection = trackData->lSections[secList[i]];
-            curNode = curSection->lNodes[j];
+			curNode = &curSection->lNodes[j];
 
             heartlineSize += 1;
 
@@ -2187,7 +2187,7 @@ void trackMesh::buildMeshes(int fromNode)
         {
             j = posList[i];
             curSection = trackData->lSections[secList[i]];
-            curNode = curSection->lNodes[j];
+			curNode = &curSection->lNodes[j];
 
             nextPos = curNode->vRelPos(-trackData->fHeart, -railSpacing);
             nextNorm = glm::vec3(0, 0.5, 0);
@@ -2253,7 +2253,7 @@ void trackMesh::buildMeshes(int fromNode)
             section* curSection = trackData->lSections[i];
             for(; j < curSection->lNodes.size(); ++j)
             {
-                distFromLastNode += curSection->lNodes.at(j)->fDistFromLast;
+				distFromLastNode += curSection->lNodes[(j)].fDistFromLast;
                 if(distFromLastNode >= crosstieSpacing)
                 {
                     distFromLastNode -= crosstieSpacing;
@@ -2301,7 +2301,7 @@ void trackMesh::buildMeshes(int fromNode)
             j = posList[i];
             curSection = trackData->lSections[secList[i]];
             lastNode = curNode;
-            curNode = curSection->lNodes[j];
+			curNode = &curSection->lNodes[j];
 
             nextPos = curNode->vRelPos(-trackData->fHeart, -railSpacing);
             nextNorm = glm::vec3(0, 0.5, 0);
@@ -2640,10 +2640,10 @@ void trackMesh::build3ds(const int _sec, QVector<float> *_vertices, QVector<unsi
     for(j = 0; j < curSection->lNodes.size(); ++j)
     {
         if(j == 0) distFromLastNode = 1.f;
-        float angle = curSection->lNodes.at(j)->fFlexion();
+		float angle = curSection->lNodes[(j)].fFlexion();
         angle /= angleNodeDist;
         angle = std::min(std::max(1.f/minNodeDist, angle), 1.f/maxNodeDist);
-        angle *= curSection->lNodes.at(j)->fDistFromLast;;
+		angle *= curSection->lNodes[(j)].fDistFromLast;;
         distFromLastNode += angle;
         if(distFromLastNode >= 1.f || j == curSection->lNodes.size()-1)
         {
@@ -2798,7 +2798,7 @@ void trackMesh::build3ds(const int _sec, QVector<float> *_vertices, QVector<unsi
     curSection = trackData->lSections[_sec];
     for(j=0; j < curSection->lNodes.size(); ++j)
     {
-        distFromLastNode += curSection->lNodes.at(j)->fDistFromLast;
+		distFromLastNode += curSection->lNodes[(j)].fDistFromLast;
         if(distFromLastNode >= crosstieSpacing)
         {
             distFromLastNode -= crosstieSpacing;
@@ -2829,7 +2829,7 @@ void trackMesh::build3ds(const int _sec, QVector<float> *_vertices, QVector<unsi
         j = posList[i];
         curSection = trackData->lSections[secList[i]];
         lastNode = curNode;
-        curNode = curSection->lNodes[j];
+		curNode = &curSection->lNodes[j];
         nextNode = trackData->getNumPoints(curSection) + j;
 
         glm::vec3 P1, P2, P3, P4, P5, P6, P7, P8;

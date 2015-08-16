@@ -1,6 +1,6 @@
 /*
 #    FVD++, an advanced coaster design tool for NoLimits
-#    Copyright (C) 2012-2014, Stephan "Lenny" Alt <alt.stephan@web.de>
+#    Copyright (C) 2012-2015, Stephan "Lenny" Alt <alt.stephan@web.de>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -41,19 +41,19 @@ int secbezier::updateSection(int node)
     QList<float> tList;
     while(lNodes.size() > 1)
     {
-        if(lNodes.size() > 2 || this->parent->lSections.at(this->parent->lSections.size()-1) == this)
+		/*if(lNodes.size() > 2 || this->parent->lSections.at(this->parent->lSections.size()-1) == this)
         {
             delete lNodes.at(1);
-        }
+		}*/
         lNodes.removeAt(1);
     }
-    lNodes.at(0)->updateNorm();
+	lNodes[0].updateNorm();
 
 
-    int cur = 0, lastcur = 0;
+	int cur = 0, lastcur = 0;
     float t = 0.f;
 
-    mnode* curNode = lNodes[0], *prevNode = NULL;
+	mnode* curNode = &lNodes[0], *prevNode = NULL;
     for(int b = 0; b < bezList.size()-1; ++b)
     {
         while(t < 1.f)
@@ -64,20 +64,20 @@ int secbezier::updateSection(int node)
             float t1 = 1.f-t;
             if(cur >= lNodes.size())
             {
-                lNodes.append(new mnode(*lNodes.back()));
+				lNodes.append(lNodes.back());
             }
             prevNode = curNode;
-            curNode = lNodes[cur];
+			curNode = &lNodes[cur];
             curNode->fEnergy = prevNode->fEnergy;
-            curNode->vPos = t1*t1*t1*bezList[b]->P1 + 3.f*t1*t1*t*bezList[b]->Kp2 + 3.f*t1*t*t*bezList[bnext]->Kp1 + t*t*t*bezList[bnext]->P1;
+			curNode->vPos = t1*t1*t1*bezList[b]->P1 + 3.f*t1*t1*t*bezList[b]->Kp2 + 3.f*t1*t*t*bezList[bnext]->Kp1 + t*t*t*bezList[bnext]->P1;
 
 
-            curNode->fRoll = t1*bezList[b]->fvdRoll + t*bezList[bnext]->fvdRoll;
+			curNode->fRoll = t1*bezList[b]->fvdRoll + t*bezList[bnext]->fvdRoll;
             curNode->fRoll *= 180.f/F_PI;
 
-            glm::vec3 diff1 = bezList[b]->Kp2-bezList[b]->P1;
-            glm::vec3 diff2 = bezList[bnext]->Kp1-bezList[b]->Kp2;
-            glm::vec3 diff3 = bezList[bnext]->P1-bezList[bnext]->Kp1;
+			glm::vec3 diff1 = bezList[b]->Kp2-bezList[b]->P1;
+			glm::vec3 diff2 = bezList[bnext]->Kp1-bezList[b]->Kp2;
+			glm::vec3 diff3 = bezList[bnext]->P1-bezList[bnext]->Kp1;
 
             curNode->vDir = t1*t1*diff1 + 2*t1*t*diff2 + t*t*diff3;
 
@@ -98,14 +98,14 @@ int secbezier::updateSection(int node)
 
             if(cur)
             {
-                curNode->fHeartDistFromLast = glm::distance(curNode->vPos, lNodes[cur-1]->vPos);
+				curNode->fHeartDistFromLast = glm::distance(curNode->vPos, lNodes[cur-1].vPos);
                 curNode->fTotalHeartLength += curNode->fHeartDistFromLast;
                 //curNode->fVel = curNode->fHeartDistFromLast*F_HZ;
                 curNode->fDistFromLast = glm::distance(curNode->vPosHeart(parent->fHeart), prevNode->vPosHeart(parent->fHeart));
                 curNode->fTotalLength = prevNode->fTotalLength + curNode->fDistFromLast;
             }
 
-            float vel = bezList[b]->fVel;
+			float vel = bezList[b]->fVel;
             if(vel == 0.f)
             {
                 //float heightDiff = curNode->vPosHeart(parent->fHeart*0.9f).y - prevNode->vPosHeart(parent->fHeart*0.9f).y;
@@ -116,25 +116,25 @@ int secbezier::updateSection(int node)
             }
             else
             {
-                curNode->fEnergy = 0.5*vel*vel + 9.80665f*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
+                curNode->fEnergy = 0.5*vel*vel + F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
             }
             if(vel < 1.f)
             {
                 vel = 1.f;
-                curNode->fEnergy = 0.5*vel*vel + 9.80665f*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
+                curNode->fEnergy = 0.5*vel*vel + F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
             }
             if(vel != vel)
             {
                 vel = 10.f;
-                curNode->fEnergy = 0.5*vel*vel + 9.80665f*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
+                curNode->fEnergy = 0.5*vel*vel + F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
             }
             curNode->fVel = vel;
             t += 1.f/(3000.f*lengthDir/vel);
             ++cur;
         }
         t -= 1.f;
-        bezList[b]->length = lNodes[cur-1]->fTotalHeartLength - lNodes[lastcur]->fTotalHeartLength;
-        bezList[b]->numNodes = cur-1-lastcur;
+		bezList[b]->length = lNodes[cur-1].fTotalHeartLength - lNodes[lastcur].fTotalHeartLength;
+		bezList[b]->numNodes = cur-1-lastcur;
         lastcur = cur-1;
     }
 
@@ -143,7 +143,7 @@ int secbezier::updateSection(int node)
     int b = 0;
     float correction = 0;
 
-    bezList[0]->fvdRoll = bezList[0]->roll;
+	bezList[0]->fvdRoll = bezList[0]->roll;
 
     for(int i = 0; i < lNodes.size(); ++i)
     {
@@ -151,27 +151,27 @@ int secbezier::updateSection(int node)
         if(i && tList[i] < tList[i-1])
         {
             ++b;
-            if(bezList[b]->relRoll)
+			if(bezList[b]->relRoll)
             {
-                bezList[b]->fvdRoll = bezList[b-1]->fvdRoll + correction*F_PI/180.f + bezList[b]->roll;
-                bezList[b-1]->ptf = bezList[b]->roll;
+				bezList[b]->fvdRoll = bezList[b-1]->fvdRoll + correction*F_PI/180.f + bezList[b]->roll;
+				bezList[b-1]->ptf = bezList[b]->roll;
             }
             else
             {
-                bezList[b]->fvdRoll = bezList[b]->roll;
-                bezList[b-1]->ptf = bezList[b]->fvdRoll - bezList[b-1]->fvdRoll - correction*F_PI/180.f;
-                if(fabs(bezList[b-1]->ptf) > F_PI)
+				bezList[b]->fvdRoll = bezList[b]->roll;
+				bezList[b-1]->ptf = bezList[b]->fvdRoll - bezList[b-1]->fvdRoll - correction*F_PI/180.f;
+				if(fabs(bezList[b-1]->ptf) > F_PI)
                 {
-                    bezList[b-1]->ptf += bezList[b-1]->ptf > 0.f ? -2.f*F_PI : 2.f*F_PI;
+					bezList[b-1]->ptf += bezList[b-1]->ptf > 0.f ? -2.f*F_PI : 2.f*F_PI;
                 }
             }
             correction = 0.f;
         }
-        correction -= glm::dot(lNodes[i]->vDir, glm::vec3(0.f, -1.f, 0.f))*lNodes[i]->fYawFromLast;
+		correction -= glm::dot(lNodes[i].vDir, glm::vec3(0.f, -1.f, 0.f))*lNodes[i].fYawFromLast;
 
-        float fRoll = bezList[b]->fvdRoll*180.f/F_PI;
+		float fRoll = bezList[b]->fvdRoll*180.f/F_PI;
 
-        lNodes[i]->setRoll(fRoll + correction);
+		lNodes[i].setRoll(fRoll + correction);
     }
 
     b = 0;
@@ -198,15 +198,15 @@ int secbezier::updateSection(int node)
 
             startVal = endVal;
 
-            if(bezList[bNext]->contRoll)
+			if(bezList[bNext]->contRoll)
             {
-                endVal = (bezList[b]->length*bezList[b]->ptf + bezList[bNext]->length*bezList[bNext]->ptf)/(bezList[b]->length + bezList[bNext]->length);//*(tNext - tList[i]);
+				endVal = (bezList[b]->length*bezList[b]->ptf + bezList[bNext]->length*bezList[bNext]->ptf)/(bezList[b]->length + bezList[bNext]->length);//*(tNext - tList[i]);
             }
             else
             {
                 endVal = 0.f;
             }
-            area = bezList[b]->ptf;
+			area = bezList[b]->ptf;
 
             a1 = 3.f*startVal + 3.f*endVal - 6.f*area;
             b1 = 6.f*area - 4.f*startVal - 2.f*endVal;
@@ -216,15 +216,15 @@ int secbezier::updateSection(int node)
         {
             startVal = 0.f;
             value = 0.f;
-            if(bezList.size() > 1 && bezList[1]->contRoll)
+			if(bezList.size() > 1 && bezList[1]->contRoll)
             {
-                endVal = (bezList[b]->length*bezList[b]->ptf + bezList[bNext]->length*bezList[bNext]->ptf)/(bezList[b]->length + bezList[bNext]->length);//*(tNext - tList[i]);
+				endVal = (bezList[b]->length*bezList[b]->ptf + bezList[bNext]->length*bezList[bNext]->ptf)/(bezList[b]->length + bezList[bNext]->length);//*(tNext - tList[i]);
             }
             else
             {
                 endVal = 0.f;
             }
-            area = bezList[0]->ptf;
+			area = bezList[0]->ptf;
 
             a1 = 3.f*startVal + 3.f*endVal - 6.f*area;
             b1 = 6.f*area - 4.f*startVal - 2.f*endVal;
@@ -232,29 +232,29 @@ int secbezier::updateSection(int node)
         }
         value += (c1 + tList[i]*(b1+ a1*tList[i]))*180.f/F_PI * (tNext - tList[i]);
 
-        lNodes[i]->setRoll(value);
+		lNodes[i].setRoll(value);
 
-        //lNodes[i]->vPos = lNodes[i]->vPosHeart(-parent->fHeart);
+		//lNodes[i].vPos = lNodes[i].vPosHeart(-parent->fHeart);
 
         if(i)
         {
-            lNodes[i]->fDistFromLast = glm::distance(lNodes[i]->vPosHeart(parent->fHeart), lNodes[i-1]->vPosHeart(parent->fHeart));
-            lNodes[i]->fTotalLength = lNodes[i-1]->fTotalLength + lNodes[i]->fDistFromLast;
-            lNodes[i]->fRollSpeed = (c1 + tList[i]*(b1+ a1*tList[i]))*F_HZ*180.f/F_PI * (tNext - tList[i]);//(lNodes[i]->fRoll - lNodes[i-1]->fRoll - glm::dot(lNodes[i]->vDir, glm::vec3(0.f, -1.f, 0.f))*lNodes[i]->fYawFromLast)*1000.f;
-            lNodes[i]->fHeartDistFromLast = glm::distance(lNodes[i]->vPos, lNodes[i-1]->vPos);
-            lNodes[i]->fTotalHeartLength += lNodes[i]->fHeartDistFromLast;
+			lNodes[i].fDistFromLast = glm::distance(lNodes[i].vPosHeart(parent->fHeart), lNodes[i-1].vPosHeart(parent->fHeart));
+			lNodes[i].fTotalLength = lNodes[i-1].fTotalLength + lNodes[i].fDistFromLast;
+			lNodes[i].fRollSpeed = (c1 + tList[i]*(b1+ a1*tList[i]))*F_HZ*180.f/F_PI * (tNext - tList[i]);//(lNodes[i].fRoll - lNodes[i-1].fRoll - glm::dot(lNodes[i].vDir, glm::vec3(0.f, -1.f, 0.f))*lNodes[i].fYawFromLast)*1000.f;
+			lNodes[i].fHeartDistFromLast = glm::distance(lNodes[i].vPos, lNodes[i-1].vPos);
+			lNodes[i].fTotalHeartLength += lNodes[i].fHeartDistFromLast;
         }
 
-        /*lNodes[i]->fRollSpeed *= -1;
-        lNodes[i]->vDir = lNodes[i]->vDirHeart(parent->fHeart);
-        lNodes[i]->vLat = lNodes[i]->vLatHeart(parent->fHeart);
-        lNodes[i]->fRollSpeed *= -1;*/
+		/*lNodes[i].fRollSpeed *= -1;
+		lNodes[i].vDir = lNodes[i].vDirHeart(parent->fHeart);
+		lNodes[i].vLat = lNodes[i].vLatHeart(parent->fHeart);
+		lNodes[i].fRollSpeed *= -1;*/
 
 
         calcDirFromLast(i);
-        float temp = cos(fabs(lNodes[i]->getPitch())*F_PI/180.f);
-        float forceAngle = sqrt(temp*temp*lNodes[i]->fYawFromLast*lNodes[i]->fYawFromLast + lNodes[i]->fPitchFromLast*lNodes[i]->fPitchFromLast);//deltaAngle;
-        lNodes[i]->fAngleFromLast = forceAngle;
+		float temp = cos(fabs(lNodes[i].getPitch())*F_PI/180.f);
+		float forceAngle = sqrt(temp*temp*lNodes[i].fYawFromLast*lNodes[i].fYawFromLast + lNodes[i].fPitchFromLast*lNodes[i].fPitchFromLast);//deltaAngle;
+		lNodes[i].fAngleFromLast = forceAngle;
 
         glm::vec3 forceVec;
         if(fabs(forceAngle) < std::numeric_limits<float>::epsilon())
@@ -263,17 +263,17 @@ int secbezier::updateSection(int node)
         }
         else
         {
-            //forceVec = glm::vec3(0.f, 1.f, 0.f) + (float)((lNodes[i]->fHeartDistFromLast*1000.f*lNodes[i]->fAngleFromLast*F_PI/180.f) / (9.80665*0.001f)) * glm::normalize(glm::vec3(glm::rotate(lNodes[i]->fDirFromLast, -lNodes[i]->vDir)*glm::vec4(-lNodes[i]->vNorm, 0.f)));
-            float normalDAngle = F_PI/180.f*(- lNodes[i]->fPitchFromLast * cos(lNodes[i]->fRoll*F_PI/180.) - temp*lNodes[i]->fYawFromLast*sin(lNodes[i]->fRoll*F_PI/180.));
-            float lateralDAngle = F_PI/180.f*(lNodes[i]->fPitchFromLast * sin(lNodes[i]->fRoll*F_PI/180.) - temp*lNodes[i]->fYawFromLast*cos(lNodes[i]->fRoll*F_PI/180.));
+			//forceVec = glm::vec3(0.f, 1.f, 0.f) + (float)((lNodes[i].fHeartDistFromLast*1000.f*lNodes[i].fAngleFromLast*F_PI/180.f) / (9.80665*0.001f)) * glm::normalize(glm::vec3(glm::rotate(lNodes[i].fDirFromLast, -lNodes[i].vDir)*glm::vec4(-lNodes[i].vNorm, 0.f)));
+			float normalDAngle = F_PI/180.f*(- lNodes[i].fPitchFromLast * cos(lNodes[i].fRoll*F_PI/180.) - temp*lNodes[i].fYawFromLast*sin(lNodes[i].fRoll*F_PI/180.));
+			float lateralDAngle = F_PI/180.f*(lNodes[i].fPitchFromLast * sin(lNodes[i].fRoll*F_PI/180.) - temp*lNodes[i].fYawFromLast*cos(lNodes[i].fRoll*F_PI/180.));
 
-            forceVec = glm::vec3(0.f, 1.f, 0.f) + lateralDAngle*lNodes[i]->fVel*F_HZ/9.80665f * lNodes[i]->vLat + normalDAngle*lNodes[i]->fHeartDistFromLast*F_HZ*F_HZ/9.80665f * lNodes[i]->vNorm;
+			forceVec = glm::vec3(0.f, 1.f, 0.f) + lateralDAngle*lNodes[i].fVel*F_HZ/F_G * lNodes[i].vLat + normalDAngle*lNodes[i].fHeartDistFromLast*F_HZ*F_HZ/F_G * lNodes[i].vNorm;
         }
-        lNodes[i]->forceNormal = - glm::dot(forceVec, glm::normalize(lNodes[i]->vNorm));
-        lNodes[i]->forceLateral = - glm::dot(forceVec, glm::normalize(lNodes[i]->vLat));
+		lNodes[i].forceNormal = - glm::dot(forceVec, glm::normalize(lNodes[i].vNorm));
+		lNodes[i].forceLateral = - glm::dot(forceVec, glm::normalize(lNodes[i].vLat));
 
     }
-    if(lNodes.size()) length = lNodes.last()->fTotalLength - lNodes.first()->fTotalLength;
+	if(lNodes.size()) length = lNodes.last().fTotalLength - lNodes.first().fTotalLength;
     else length = 0;
     return node;
 }
@@ -291,12 +291,12 @@ void secbezier::saveSection(std::fstream& file)
     writeBytes(&file, (const char*)&bezcount, sizeof(int));
     for(int i = 0; i < bezcount; ++i)
     {
-        writeBytes(&file, (const char*)&bezList[i]->P1, sizeof(glm::vec3));
-        writeBytes(&file, (const char*)&bezList[i]->Kp1, sizeof(glm::vec3));
-        writeBytes(&file, (const char*)&bezList[i]->Kp2, sizeof(glm::vec3));
-        writeBytes(&file, (const char*)&bezList[i]->contRoll, sizeof(bool));
-        writeBytes(&file, (const char*)&bezList[i]->relRoll, sizeof(bool));
-        writeBytes(&file, (const char*)&bezList[i]->roll, sizeof(float));
+		writeBytes(&file, (const char*)&bezList[i]->P1, sizeof(glm::vec3));
+		writeBytes(&file, (const char*)&bezList[i]->Kp1, sizeof(glm::vec3));
+		writeBytes(&file, (const char*)&bezList[i]->Kp2, sizeof(glm::vec3));
+		writeBytes(&file, (const char*)&bezList[i]->contRoll, sizeof(bool));
+		writeBytes(&file, (const char*)&bezList[i]->relRoll, sizeof(bool));
+		writeBytes(&file, (const char*)&bezList[i]->roll, sizeof(float));
     }
 
     int supcount = supList.size();
@@ -316,13 +316,13 @@ void secbezier::loadSection(std::fstream& file)
     for(int i = 0; i < bezcount; ++i)
     {
         bezList.append(new bezier_t);
-        bezList[i]->P1 = readVec3(&file);
-        bezList[i]->Kp1 = readVec3(&file);
-        bezList[i]->Kp2 = readVec3(&file);
-        bezList[i]->contRoll = readBool(&file);
-        bezList[i]->relRoll = readBool(&file);
-        bezList[i]->roll = readFloat(&file);
-        bezList[i]->fVel = 0;
+		bezList[i]->P1 = readVec3(&file);
+		bezList[i]->Kp1 = readVec3(&file);
+		bezList[i]->Kp2 = readVec3(&file);
+		bezList[i]->contRoll = readBool(&file);
+		bezList[i]->relRoll = readBool(&file);
+		bezList[i]->roll = readFloat(&file);
+		bezList[i]->fVel = 0;
     }
 
     int supcount = readInt(&file);
@@ -341,13 +341,13 @@ void secbezier::legacyLoadSection(std::fstream& file)
     for(int i = 0; i < bezcount; ++i)
     {
         bezList.append(new bezier_t);
-        bezList[i]->P1 = readVec3(&file);
-        bezList[i]->Kp1 = readVec3(&file);
-        bezList[i]->Kp2 = readVec3(&file);
-        bezList[i]->contRoll = readBool(&file);
-        bezList[i]->relRoll = readBool(&file);
-        bezList[i]->roll = readFloat(&file);
-        bezList[i]->fVel = 0;
+		bezList[i]->P1 = readVec3(&file);
+		bezList[i]->Kp1 = readVec3(&file);
+		bezList[i]->Kp2 = readVec3(&file);
+		bezList[i]->contRoll = readBool(&file);
+		bezList[i]->relRoll = readBool(&file);
+		bezList[i]->roll = readFloat(&file);
+		bezList[i]->fVel = 0;
     }
 
     int supcount = readInt(&file);
@@ -370,12 +370,12 @@ void secbezier::saveSection(std::stringstream& file)
     writeBytes(&file, (const char*)&bezcount, sizeof(int));
     for(int i = 0; i < bezcount; ++i)
     {
-        writeBytes(&file, (const char*)&bezList[i]->P1, sizeof(glm::vec3));
-        writeBytes(&file, (const char*)&bezList[i]->Kp1, sizeof(glm::vec3));
-        writeBytes(&file, (const char*)&bezList[i]->Kp2, sizeof(glm::vec3));
-        writeBytes(&file, (const char*)&bezList[i]->contRoll, sizeof(bool));
-        writeBytes(&file, (const char*)&bezList[i]->relRoll, sizeof(bool));
-        writeBytes(&file, (const char*)&bezList[i]->roll, sizeof(float));
+		writeBytes(&file, (const char*)&bezList[i]->P1, sizeof(glm::vec3));
+		writeBytes(&file, (const char*)&bezList[i]->Kp1, sizeof(glm::vec3));
+		writeBytes(&file, (const char*)&bezList[i]->Kp2, sizeof(glm::vec3));
+		writeBytes(&file, (const char*)&bezList[i]->contRoll, sizeof(bool));
+		writeBytes(&file, (const char*)&bezList[i]->relRoll, sizeof(bool));
+		writeBytes(&file, (const char*)&bezList[i]->roll, sizeof(float));
     }
 
     int supcount = supList.size();
@@ -395,13 +395,13 @@ void secbezier::loadSection(std::stringstream& file)
     for(int i = 0; i < bezcount; ++i)
     {
         bezList.append(new bezier_t);
-        bezList[i]->P1 = readVec3(&file);
-        bezList[i]->Kp1 = readVec3(&file);
-        bezList[i]->Kp2 = readVec3(&file);
-        bezList[i]->contRoll = readBool(&file);
-        bezList[i]->relRoll = readBool(&file);
-        bezList[i]->roll = readFloat(&file);
-        bezList[i]->fVel = 0;
+		bezList[i]->P1 = readVec3(&file);
+		bezList[i]->Kp1 = readVec3(&file);
+		bezList[i]->Kp2 = readVec3(&file);
+		bezList[i]->contRoll = readBool(&file);
+		bezList[i]->relRoll = readBool(&file);
+		bezList[i]->roll = readFloat(&file);
+		bezList[i]->fVel = 0;
     }
 
     int supcount = readInt(&file);
