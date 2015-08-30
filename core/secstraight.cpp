@@ -48,12 +48,6 @@ int secstraight::updateSection(int)
     this->length = 0;
     fHLength = getMaxArgument();
 
-    while(lNodes.size() > 1) {
-		/*if(lNodes.size() > 2 || this->parent->lSections.at(this->parent->lSections.size()-1) == this) {
-            delete lNodes.at(1);
-		}*/
-        lNodes.removeAt(1);
-    }
 	lNodes[0].updateNorm();
 
 	float diff = lNodes[0].fRollSpeed; // - rollFunc->funcList.at(0)]-startValue;
@@ -65,7 +59,9 @@ int secstraight::updateSection(int)
     float fCurLength = 0.0f;
 
     while(fCurLength < this->fHLength - std::numeric_limits<float>::epsilon() && !lastNode) {
-		lNodes.append(lNodes.last());
+		if(numNodes >= lNodes.size()) {
+			lNodes.append(lNodes.last());
+		}
 
         float dTime;
 		mnode* prevNode = &lNodes[numNodes-1];
@@ -92,9 +88,9 @@ int secstraight::updateSection(int)
         curNode->forceLateral = -curNode->vLat.y;
 
         curNode->fDistFromLast = glm::distance(curNode->vPosHeart(parent->fHeart), prevNode->vPosHeart(parent->fHeart));
-        curNode->fTotalLength += curNode->fDistFromLast;
+		curNode->fTotalLength = prevNode->fTotalLength + curNode->fDistFromLast;
         curNode->fHeartDistFromLast = glm::distance(curNode->vPos, prevNode->vPos);
-        curNode->fTotalHeartLength += curNode->fHeartDistFromLast;
+		curNode->fTotalHeartLength = prevNode->fTotalHeartLength + curNode->fHeartDistFromLast;
 
         curNode->fRollSpeed = rollFunc->getValue(fCurLength);
 
@@ -118,6 +114,10 @@ int secstraight::updateSection(int)
         this->length += curNode->fDistFromLast;
         ++numNodes;
     }
+
+	while(lNodes.size() > numNodes) {
+		lNodes.removeLast();
+	}
 
 	if(lNodes.size()) length = lNodes.last().fTotalLength - lNodes.first().fTotalLength;
     else length = 0;

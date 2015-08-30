@@ -54,14 +54,6 @@ int seccurved::updateSection(int)
 
     fAngle = getMaxArgument();
 
-    while(lNodes.size() > 1) {
-		/*if(lNodes.size() > 2 || parent->lSections.at(parent->lSections.size()-1) == this) {
-            delete lNodes.at(1);
-		}*/
-        lNodes.removeAt(1);
-        lAngles.removeAt(1);
-    }
-
     int sizediff = lNodes.size() - lAngles.size();
     for(int i = 0; i <= sizediff; ++i) {
         lAngles.append(0.f);
@@ -80,7 +72,6 @@ int seccurved::updateSection(int)
     float myLeadOut = 0.f;
 
     while(fRiddenAngle < fAngle - std::numeric_limits<float>::epsilon()) {
-
         float deltaAngle, fTrans;
 
 		mnode* prevNode = &lNodes[numNodes-1];
@@ -103,7 +94,13 @@ int seccurved::updateSection(int)
             }
         }
 
-		lNodes.append(*prevNode);
+		fRiddenAngle += deltaAngle;
+		if(numNodes >= lNodes.size()) {
+			lNodes.append(*prevNode);
+			lAngles.append(fRiddenAngle);
+		} else {
+			lAngles[numNodes] = fRiddenAngle;
+		}
 
 		mnode* curNode = &lNodes[numNodes];
 		prevNode = &lNodes[numNodes-1]; // in case vector gets copied
@@ -112,10 +109,6 @@ int seccurved::updateSection(int)
             qWarning("train goes very slowly");
             break;
         }
-
-        fRiddenAngle += deltaAngle;
-        lAngles.append(fRiddenAngle);
-
 
         curNode->updateNorm();
 
@@ -143,7 +136,6 @@ int seccurved::updateSection(int)
 			curNode->fRollSpeed += glm::dot(lNodes[numNodes].vDir, glm::vec3(0.f, -1.f, 0.f))*lNodes[numNodes].fYawFromLast*F_HZ;
         }
 
-
         curNode->updateNorm();
 
         if(bSpeed) {
@@ -154,18 +146,14 @@ int seccurved::updateSection(int)
             curNode->fEnergy = 0.5*fVel*fVel + F_G*(curNode->vPosHeart(parent->fHeart*0.9f).y + curNode->fTotalLength*parent->fFriction);
         }
 
-
-
         //curNode->vPos = glm::vec3(glm::translate(glm::rotate(glm::translate(vCenter), fAngle/numNodes, (float)glm::cos(-fDirection*F_PI/180) * curNode->vLat  + (float)glm::sin(-fDirection*F_PI/180) * prevNode->vNorm), -vCenter)*glm::vec4(prevNode->vPos, 1));
 
-        curNode->updateRoll();
+		curNode->updateRoll();
 
-        curNode->fDistFromLast = glm::distance(curNode->vPosHeart(parent->fHeart), prevNode->vPosHeart(parent->fHeart));
-        curNode->fTotalLength += curNode->fDistFromLast;
+		curNode->fDistFromLast = glm::distance(curNode->vPosHeart(parent->fHeart), prevNode->vPosHeart(parent->fHeart));
+		curNode->fTotalLength = prevNode->fTotalLength + curNode->fDistFromLast;
         curNode->fHeartDistFromLast = glm::distance(curNode->vPos, prevNode->vPos);
-        curNode->fTotalHeartLength += curNode->fHeartDistFromLast;
-
-
+		curNode->fTotalHeartLength = prevNode->fTotalHeartLength + curNode->fHeartDistFromLast;
 
         calcDirFromLast(numNodes);
 
@@ -188,6 +176,12 @@ int seccurved::updateSection(int)
 
         numNodes++;
     }
+
+	while(lNodes.size() > numNodes) {
+		lNodes.removeLast();
+		lAngles.removeLast();
+	}
+
     if(fLeadOut > 0.0001f) {
 		lNodes.last().fAngleFromLast = 0.f;
 		lNodes.last().fPitchFromLast = 0.f;
