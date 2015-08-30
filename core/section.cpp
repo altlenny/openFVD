@@ -29,6 +29,7 @@ using namespace std;
 
 section::section(track* getParent, enum secType _type, mnode* first)
 {
+	lNodes.reserve(180000);
 	lNodes.append(*first);
     parent = getParent;
     normForce = NULL;

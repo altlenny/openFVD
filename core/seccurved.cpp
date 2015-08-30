@@ -106,6 +106,7 @@ int seccurved::updateSection(int)
 		lNodes.append(*prevNode);
 
 		mnode* curNode = &lNodes[numNodes];
+		prevNode = &lNodes[numNodes-1]; // in case vector gets copied
 
         if(curNode->fVel < 0.1f) {
             qWarning("train goes very slowly");

@@ -66,7 +66,7 @@ int secbezier::updateSection(int node)
             {
 				lNodes.append(lNodes.back());
             }
-            prevNode = curNode;
+			prevNode = &lNodes[glm::max(cur-1, 0)];
 			curNode = &lNodes[cur];
             curNode->fEnergy = prevNode->fEnergy;
 			curNode->vPos = t1*t1*t1*bezList[b]->P1 + 3.f*t1*t1*t*bezList[b]->Kp2 + 3.f*t1*t*t*bezList[bnext]->Kp1 + t*t*t*bezList[bnext]->P1;
