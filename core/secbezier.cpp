@@ -416,13 +416,13 @@ float secbezier::getMaxArgument()
     return 0.f;
 }
 
-bool secbezier::isLockable(function* _func)
+bool secbezier::isLockable(func* _func)
 {
     Q_UNUSED(_func);
     return false;
 }
 
-bool secbezier::isInFunction(int index, subfunction* func)
+bool secbezier::isInFunction(int index, subfunc* func)
 {
     Q_UNUSED(index);
     Q_UNUSED(func);

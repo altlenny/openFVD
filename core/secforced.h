@@ -35,8 +35,8 @@ public:
     virtual void saveSection(std::stringstream& file);
     virtual void loadSection(std::stringstream& file);
     virtual float getMaxArgument();
-    virtual bool isLockable(function* _func);
-    virtual bool isInFunction(int index, subfunction* func);
+    virtual bool isLockable(func* _func);
+    virtual bool isInFunction(int index, subfunc* func);
 };
 
 #endif // SECFORCED_H

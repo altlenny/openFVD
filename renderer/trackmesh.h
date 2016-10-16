@@ -53,6 +53,7 @@ public:
     trackMesh(track* parent = NULL);
     ~trackMesh();
 
+    bool isInit;
 
     int createPipes(QVector<tracknode_t> &list, QList<pipeoption_t> &options);
     int create3dsPipes(QVector<float> *_vertices, QList<pipeoption_t> &options);
@@ -110,6 +111,7 @@ public:
 
     bool isWireframe;
 
+    void init();
 private:
     int j;
     int nextNode;

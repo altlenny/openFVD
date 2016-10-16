@@ -250,7 +250,8 @@ void track::updateTrack(int index, int iNode)
 
     nodeAt = nodeAt > getNumPoints(lSections[index])+updateFrom ? getNumPoints(lSections[index])+updateFrom : nodeAt;
 
-    mParent->mMesh->buildMeshes(nodeAt);
+    if(mParent->mMesh != NULL)
+        mParent->mMesh->buildMeshes(nodeAt);
 
     mSec = timer.nsecsElapsed()/1000000.;
     gloParent->showMessage(QString::number(mSec).append(QString("ms used to update %1 (%2) points").arg(count2).arg(count)), 3000);
@@ -317,6 +318,9 @@ void track::newSection(enum secType type, int index)
         break;
     case 5:
         newSection = new secbezier(this, startNode);
+        break;
+    case 6:
+        newSection = new secnlcsv(this, startNode);
         break;
     default:
         newSection = NULL;
@@ -1100,6 +1104,14 @@ QString track::loadTrack(fstream& file, trackWidget* _widget)
             activeSection->updateSection();
             //gloParent->addForceSec(activeSection);
         }
+        else if(temp == "CSV")
+        {
+            _widget->addSection(nolimitscsv);
+            //this->newSection(forced);
+            activeSection->loadSection(file);
+            activeSection->updateSection();
+            //gloParent->addForceSec(activeSection);
+        }
         else
         {
             return QString("Error while Loading: No Such Segment!");
@@ -1205,6 +1217,14 @@ QString track::legacyLoadTrack(fstream& file, trackWidget* _widget)
         else if(temp == "BEZ")
         {
             _widget->addSection(bezier);
+            //this->newSection(forced);
+            activeSection->legacyLoadSection(file);
+            activeSection->updateSection();
+            //gloParent->addForceSec(activeSection);
+        }
+        else if(temp == "CSV")
+        {
+            _widget->addSection(nolimitscsv);
             //this->newSection(forced);
             activeSection->legacyLoadSection(file);
             activeSection->updateSection();

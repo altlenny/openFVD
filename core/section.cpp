@@ -20,6 +20,7 @@
 #include "exportfuncs.h"
 #include <cmath>
 
+#include <QDebug>
 #include "track.h"
 
 
@@ -35,7 +36,7 @@ section::section(track* getParent, enum secType _type, mnode* first)
     normForce = NULL;
     latForce = NULL;
     if(_type != bezier) {
-        rollFunc = new function(0, 10, 0, 0, this, funcRoll);
+        rollFunc = new func(0, 10, 0, 0, this, funcRoll);
     } else {
         rollFunc = NULL;
     }

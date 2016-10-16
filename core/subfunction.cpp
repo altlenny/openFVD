@@ -44,11 +44,11 @@ float interpolate(float t, float x1, float x2, float x3, float x4)
 }
 
 
-subfunction::subfunction()
+subfunc::subfunc()
 {
 }
 
-subfunction::subfunction(float min, float max, float start, float diff, function* getparent)
+subfunc::subfunc(float min, float max, float start, float diff, func* getparent)
 {
     minArgument = min;
     maxArgument = max;
@@ -69,7 +69,7 @@ subfunction::subfunction(float min, float max, float start, float diff, function
     locked = false;
 }
 
-void subfunction::update(float min, float max, float diff)
+void subfunc::update(float min, float max, float diff)
 {
     minArgument = min;
     maxArgument = max;
@@ -79,7 +79,7 @@ void subfunction::update(float min, float max, float diff)
     this->parent->translateValues(this);
 }
 
-void subfunction::updateBez()
+void subfunc::updateBez()
 {
     int i = 0;
     valueList.clear();
@@ -96,7 +96,7 @@ void subfunction::updateBez()
     valueList.append(1);
 }
 
-void subfunction::changeDegree(enum eDegree newDegree)
+void subfunc::changeDegree(enum eDegree newDegree)
 {
     degree = newDegree;
 
@@ -141,11 +141,11 @@ void subfunction::changeDegree(enum eDegree newDegree)
     return;
 }
 
-float subfunction::getValue(float x)
+float subfunc::getValue(float x)
 {
     if(locked)
     {
-        parent->changeLength(parent->secParent->getMaxArgument()-minArgument, parent->getSubfunctionNumber(this));
+        parent->changeLength(parent->secParent->getMaxArgument()-minArgument, parent->getSubfuncNumber(this));
         //maxArgument = parent->secParent->getMaxArgument();
     }
     else if(x > maxArgument)
@@ -268,18 +268,18 @@ float subfunction::getValue(float x)
     return -1;
 }
 
-float subfunction::getMinValue() // relic, doesn't get used at all at this time
+float subfunc::getMinValue() // relic, doesn't get used at all at this time
 {
     return startValue < endValue() ? startValue : endValue();
 }
 
-float subfunction::getMaxValue()
+float subfunc::getMaxValue()
 {
     return startValue > endValue() ? startValue : endValue();
 
 }
 
-void subfunction::translateValues(float newStart)
+void subfunc::translateValues(float newStart)
 {
     startValue = newStart;
     if(degree == tozero) {
@@ -287,7 +287,7 @@ void subfunction::translateValues(float newStart)
     }
 }
 
-bool subfunction::isSymmetric()
+bool subfunc::isSymmetric()
 {
     if(degree == quadratic && fabs(arg1) < 0.5f)
         return true;
@@ -300,7 +300,7 @@ bool subfunction::isSymmetric()
     return false;
 }
 
-void subfunction::saveSubFunc(fstream& file)
+void subfunc::saveSubFunc(fstream& file)
 {
     writeBytes(&file, (const char*)&degree, sizeof(enum eDegree));
     writeBytes(&file, (const char*)&minArgument, sizeof(float));
@@ -313,7 +313,7 @@ void subfunction::saveSubFunc(fstream& file)
     writeBytes(&file, (const char*)&locked, sizeof(bool));
 }
 
-void subfunction::saveSubFunc(stringstream& file)
+void subfunc::saveSubFunc(stringstream& file)
 {
     writeBytes(&file, (const char*)&degree, sizeof(enum eDegree));
     writeBytes(&file, (const char*)&minArgument, sizeof(float));
@@ -326,7 +326,7 @@ void subfunction::saveSubFunc(stringstream& file)
     writeBytes(&file, (const char*)&locked, sizeof(bool));
 }
 
-void subfunction::loadSubFunc(fstream& file)
+void subfunc::loadSubFunc(fstream& file)
 {
     degree = (enum eDegree)readInt(&file);
     minArgument = readFloat(&file);
@@ -339,7 +339,7 @@ void subfunction::loadSubFunc(fstream& file)
     locked = readBool(&file);
 }
 
-void subfunction::legacyLoadSubFunc(fstream& file)
+void subfunc::legacyLoadSubFunc(fstream& file)
 {
     degree = (enum eDegree)readInt(&file);
     minArgument = readFloat(&file);
@@ -352,12 +352,12 @@ void subfunction::legacyLoadSubFunc(fstream& file)
     locked = readBool(&file);
 }
 
-void subfunction::loadSubFunc(stringstream& file)
+void subfunc::loadSubFunc(stringstream& file)
 {
     degree = (enum eDegree)readInt(&file);
     minArgument = readFloat(&file);
     maxArgument = readFloat(&file);
-    parent->changeLength(maxArgument-minArgument, parent->getSubfunctionNumber(this));
+    parent->changeLength(maxArgument-minArgument, parent->getSubfuncNumber(this));
     startValue = readFloat(&file);
     arg1 = readFloat(&file);
     symArg = readFloat(&file);
@@ -366,7 +366,7 @@ void subfunction::loadSubFunc(stringstream& file)
     locked = readBool(&file);
 }
 
-float subfunction::applyTension(float x)
+float subfunc::applyTension(float x)
 {
     if(fabs(tensionArg) < 0.0005)
     {
@@ -387,7 +387,7 @@ float subfunction::applyTension(float x)
     return x;
 }
 
-float subfunction::applyCenter(float x)
+float subfunc::applyCenter(float x)
 {
     if(centerArg > 0.f)
     {
@@ -402,7 +402,7 @@ float subfunction::applyCenter(float x)
     return x;
 }
 
-float subfunction::endValue()
+float subfunc::endValue()
 {
     if(isSymmetric()) {
         return startValue;

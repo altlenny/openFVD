@@ -40,7 +40,7 @@ transitionWidget::~transitionWidget()
     delete ui;
 }
 
-void transitionWidget::changeSubfunction(subfunction *_newSubfunc)
+void transitionWidget::changeSubfunc(subfunc *_newSubfunc)
 {
     phantomChanges = true;
     selectedFunc = _newSubfunc;
@@ -260,7 +260,7 @@ void transitionWidget::changeSubfunction(subfunction *_newSubfunc)
 void transitionWidget::on_lengthSpin_valueChanged(double arg1)
 {
     if(phantomChanges) return;
-    int index = selectedFunc->parent->getSubfunctionNumber(selectedFunc);
+    int index = selectedFunc->parent->getSubfuncNumber(selectedFunc);
 
     const bool need_length_factor = (selectedFunc->parent->secParent->bArgument == DISTANCE && (selectedFunc->parent->secParent->type == forced || selectedFunc->parent->secParent->type == geometric)) || selectedFunc->parent->secParent->type == straight;
 
@@ -331,7 +331,7 @@ void transitionWidget::on_transitionBox_currentIndexChanged(int index)
         gloParent->setUndoButtons();
     }
 
-    changeSubfunction(selectedFunc); // to make sure the frames are up to date (after undo settings because that would fuck them up)
+    changeSubfunc(selectedFunc); // to make sure the frames are up to date (after undo settings because that would fuck them up)
 }
 
 void transitionWidget::on_changeSpin_valueChanged(double arg1)
@@ -583,7 +583,7 @@ void transitionWidget::on_tensionSpin_valueChanged(double arg1)
     }
 }
 
-subfunction* transitionWidget::getSelectedFunc()
+subfunc* transitionWidget::getSelectedFunc()
 {
     return selectedFunc;
 }
@@ -591,7 +591,7 @@ subfunction* transitionWidget::getSelectedFunc()
 void transitionWidget::on_appendButton_released()
 {
     trackHandler* inTrack = mParent->selTrack;
-    int atIndex = selectedFunc->parent->getSubfunctionNumber(selectedFunc);
+    int atIndex = selectedFunc->parent->getSubfuncNumber(selectedFunc);
 
     selectedFunc->parent->appendSubFunction(1, atIndex);
     inTrack->trackData->updateTrack(inTrack->trackData->activeSection, (int)(selectedFunc->maxArgument*F_HZ-1.5f));
@@ -622,7 +622,7 @@ void transitionWidget::on_appendButton_released()
 void transitionWidget::on_prependButton_released()
 {
     trackHandler* inTrack = mParent->selTrack;
-    int atIndex = selectedFunc->parent->getSubfunctionNumber(selectedFunc)-1;
+    int atIndex = selectedFunc->parent->getSubfuncNumber(selectedFunc)-1;
 
     selectedFunc->parent->appendSubFunction(1, atIndex);
     inTrack->trackData->updateTrack(inTrack->trackData->activeSection, (int)(selectedFunc->parent->funcList[atIndex+1]->minArgument*F_HZ-1.5f));
@@ -652,8 +652,8 @@ void transitionWidget::on_prependButton_released()
 void transitionWidget::on_removeButton_released()
 {
     trackHandler* inTrack = mParent->selTrack;
-    function* parentFunc = selectedFunc->parent;
-    int pos = parentFunc->getSubfunctionNumber(selectedFunc);
+    func* parentFunc = selectedFunc->parent;
+    int pos = parentFunc->getSubfuncNumber(selectedFunc);
 
     if(!inTrack->mUndoHandler->busy)
     {
@@ -666,12 +666,12 @@ void transitionWidget::on_removeButton_released()
     if(pos == selectedFunc->parent->funcList.size())
     {
         mParent->selFunc = parentFunc->funcList[pos-1];
-        this->changeSubfunction(parentFunc->funcList[pos-1]);
+        this->changeSubfunc(parentFunc->funcList[pos-1]);
     }
     else
     {
         mParent->selFunc = parentFunc->funcList[pos];
-        this->changeSubfunction(parentFunc->funcList[pos]);
+        this->changeSubfunc(parentFunc->funcList[pos]);
     }
     inTrack->trackData->updateTrack(inTrack->trackData->activeSection, (int)(selectedFunc->minArgument*F_HZ-1.5f));
     mParent->redrawGraphs();
@@ -721,7 +721,7 @@ void transitionWidget::on_lockCheck_stateChanged(int arg1)
     undoAction* temp1 = NULL;
     trackHandler* inTrack = mParent->selTrack;
 
-    int id = selectedFunc->parent->getSubfunctionNumber(selectedFunc);
+    int id = selectedFunc->parent->getSubfuncNumber(selectedFunc);
     if(arg1)
     {
         if(!inTrack->mUndoHandler->busy)

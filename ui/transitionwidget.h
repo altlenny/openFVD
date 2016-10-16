@@ -33,8 +33,8 @@ class transitionWidget : public QWidget
 public:
     explicit transitionWidget(QWidget *parent = 0);
     ~transitionWidget();
-    void changeSubfunction(subfunction* _newSubfunc);
-    subfunction* getSelectedFunc();
+    void changeSubfunc(subfunc* _newSubfunc);
+    subfunc* getSelectedFunc();
     void adjustLengthSteps(secType _type, bool _argument);
     
     graphWidget* mParent;
@@ -70,7 +70,7 @@ public slots:
 
 private:
     Ui::transitionWidget *ui;
-    subfunction* selectedFunc;
+    subfunc* selectedFunc;
     bool phantomChanges;
 };
 

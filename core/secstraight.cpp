@@ -48,6 +48,10 @@ int secstraight::updateSection(int)
     this->length = 0;
     fHLength = getMaxArgument();
 
+    while(lNodes.size() > 1) {
+        lNodes.removeAt(1);
+    }
+
 	lNodes[0].updateNorm();
 
 	float diff = lNodes[0].fRollSpeed; // - rollFunc->funcList.at(0)]-startValue;
@@ -59,9 +63,7 @@ int secstraight::updateSection(int)
     float fCurLength = 0.0f;
 
     while(fCurLength < this->fHLength - std::numeric_limits<float>::epsilon() && !lastNode) {
-		if(numNodes >= lNodes.size()) {
-			lNodes.append(lNodes.last());
-		}
+        lNodes.append(lNodes.last());
 
         float dTime;
 		mnode* prevNode = &lNodes[numNodes-1];
@@ -88,9 +90,9 @@ int secstraight::updateSection(int)
         curNode->forceLateral = -curNode->vLat.y;
 
         curNode->fDistFromLast = glm::distance(curNode->vPosHeart(parent->fHeart), prevNode->vPosHeart(parent->fHeart));
-		curNode->fTotalLength = prevNode->fTotalLength + curNode->fDistFromLast;
+        curNode->fTotalLength += curNode->fDistFromLast;
         curNode->fHeartDistFromLast = glm::distance(curNode->vPos, prevNode->vPos);
-		curNode->fTotalHeartLength = prevNode->fTotalHeartLength + curNode->fHeartDistFromLast;
+        curNode->fTotalHeartLength += curNode->fHeartDistFromLast;
 
         curNode->fRollSpeed = rollFunc->getValue(fCurLength);
 
@@ -202,7 +204,7 @@ void secstraight::loadSection(std::stringstream& file)
     rollFunc->loadFunction(file);
 }
 
-bool secstraight::isInFunction(int index, subfunction* func)
+bool secstraight::isInFunction(int index, subfunc* func)
 {
     if(func == NULL) return false;
     if(index >= lNodes.size()) return false;
@@ -213,7 +215,7 @@ bool secstraight::isInFunction(int index, subfunction* func)
     return false;
 }
 
-bool secstraight::isLockable(function* _func)
+bool secstraight::isLockable(func* _func)
 {
     Q_UNUSED(_func)
     return false;

@@ -35,11 +35,11 @@ enum eFunctype
 
 class section;
 
-class function
+class func
 {
 public:
-    function(float min, float max, float start, float end, section* _parent, enum eFunctype newtype);
-    ~function();
+    func(float min, float max, float start, float end, section* _parent, enum eFunctype newtype);
+    ~func();
     void appendSubFunction(float length, int i = -1);
     void removeSubFunction(int i = -1);
 
@@ -51,11 +51,11 @@ public:
     float getMaxValue();
     float getMinValue();
 
-    void translateValues(subfunction* caller);
+    void translateValues(subfunc* caller);
 
     float changeLength(float newlength, int index);
 
-    int getSubfunctionNumber(subfunction* _sub);
+    int getSubfuncNumber(subfunc* _sub);
 
     void saveFunction(std::fstream& file);
     void loadFunction(std::fstream& file);
@@ -67,11 +67,11 @@ public:
     bool lock(int _id);
 
     int lockedFunc();
-    subfunction* getSubfunction(float x);
+    subfunc* getSubfunc(float x);
 
-    QList<subfunction*> funcList;
+    QList<subfunc*> funcList;
 
-    int activeSubfunction;
+    int activeSubfunc;
     const enum eFunctype type;
     section* const secParent;
 private:

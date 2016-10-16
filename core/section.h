@@ -40,7 +40,8 @@ enum secType
     curved,
     forced,
     geometric,
-    bezier
+    bezier,
+    nolimitscsv
 };
 
 class section
@@ -61,14 +62,14 @@ public:
     virtual void saveSection(std::stringstream& file) = 0;
     virtual void loadSection(std::stringstream& file) = 0;
     virtual float getMaxArgument() = 0;
-    virtual bool isLockable(function* _func) = 0;
-    virtual bool isInFunction(int index, subfunction* func) = 0;
+    virtual bool isLockable(func* _func) = 0;
+    virtual bool isInFunction(int index, subfunc* func) = 0;
     float getSpeed();
     bool setLocked(eFunctype func, int _id, bool _active);
     void calcDirFromLast(int i);
 	QVector<mnode> lNodes;
     track* parent;
-    function* rollFunc;
+    func* rollFunc;
 
     enum secType type;
 
@@ -90,8 +91,8 @@ public:
 
     // Forced/Geometric Section Parameters
     int iTime;
-    function* normForce;
-    function* latForce;
+    func* normForce;
+    func* latForce;
     QString sName;
 
     // Bezier Section Parameters

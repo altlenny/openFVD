@@ -261,7 +261,7 @@ void graphWidget::drawGraph(int index)
 
     for(int i = 0; i < pGraphList[index]->graphList.size(); ++i) {
         ui->plotter->addPlottable(pGraphList[index]->graphList[i]);
-        subfunction* temp = (subfunction*)pGraphList[index]->graphList[i]->property("p").value<void*>();
+        subfunc* temp = (subfunc*)pGraphList[index]->graphList[i]->property("p").value<void*>();
         if(temp && temp == ui->transitionEditor->getSelectedFunc()) {
             pGraphList[index]->graphList[i]->setSelected(true);
         }
@@ -322,6 +322,7 @@ void graphWidget::curSectionChanged(sectionHandler *_section)
     switch(_section->type) {
     case anchor:
     case bezier:
+    case nolimitscsv:
         return;
     case curved:
     case straight:
@@ -344,7 +345,7 @@ void graphWidget::curSectionChanged(sectionHandler *_section)
     ui->transitionEditor->adjustLengthSteps(_section->sectionData->type, _section->sectionData->bArgument);
     ui->tabWidget->removeTab(1);
     ui->tabWidget->setCurrentWidget(ui->graphChooser);
-    ui->transitionEditor->changeSubfunction(NULL);
+    ui->transitionEditor->changeSubfunc(NULL);
     selFunc = NULL;
 }
 
@@ -409,8 +410,8 @@ void graphWidget::selectionChanged()
     }
 
     if(selected.size()) {
-        subfunction* temp = (subfunction*)selected[0]->property("p").value<void*>();
-        ui->transitionEditor->changeSubfunction(temp);
+        subfunc* temp = (subfunc*)selected[0]->property("p").value<void*>();
+        ui->transitionEditor->changeSubfunc(temp);
         selFunc = temp;
         ui->tabWidget->addTab(ui->transitionEditor, "Transition Editor");
         ui->tabWidget->setCurrentWidget(ui->transitionEditor);
@@ -418,20 +419,20 @@ void graphWidget::selectionChanged()
     } else {
         ui->tabWidget->removeTab(1);
         ui->tabWidget->setCurrentWidget(ui->graphChooser);
-        ui->transitionEditor->changeSubfunction(NULL);
+        ui->transitionEditor->changeSubfunc(NULL);
         selFunc = NULL;
     }
     this->selTrack->trackData->hasChanged = true;
     redrawGraphs();
 }
 
-bool graphWidget::changeSelection(subfunction* _sel)
+bool graphWidget::changeSelection(subfunc* _sel)
 {
-    ui->transitionEditor->changeSubfunction(_sel);
+    ui->transitionEditor->changeSubfunc(_sel);
     selFunc = _sel;
     ui->plotter->deselectAll();
     for(int i = 0; i < ui->plotter->graphCount(); ++i) {
-        if((subfunction*)ui->plotter->graph(i)->property("p").value<void*>() == _sel) {
+        if((subfunc*)ui->plotter->graph(i)->property("p").value<void*>() == _sel) {
             ui->plotter->graph(i)->setSelected(true);
             return true;
         }
@@ -497,7 +498,7 @@ void graphWidget::redrawGraphs(bool otherArgument)
 
 void graphWidget::on_plotter_customContextMenuRequested(const QPoint &pos)
 {
-    subfunction* selFunc = ui->transitionEditor->getSelectedFunc();
+    subfunc* selFunc = ui->transitionEditor->getSelectedFunc();
     if(selFunc == NULL) return;
 
     QMenu *menu = new QMenu(this);
@@ -513,7 +514,7 @@ void graphWidget::on_plotter_customContextMenuRequested(const QPoint &pos)
 }
 
 void graphWidget::keyPressEvent(QKeyEvent* event) {
-    subfunction* oldFunc = selFunc;
+    subfunc* oldFunc = selFunc;
     int i;
     bool ok = false;
     switch(event->key()) {
@@ -524,7 +525,7 @@ void graphWidget::keyPressEvent(QKeyEvent* event) {
         break;
     case Qt::Key_Right:
         if(selFunc) {
-            if((i = selFunc->parent->getSubfunctionNumber(selFunc)) == selFunc->parent->funcList.size()-1) {
+            if((i = selFunc->parent->getSubfuncNumber(selFunc)) == selFunc->parent->funcList.size()-1) {
                 ui->transitionEditor->on_appendButton_released();
             } else {
                 changeSelection(selFunc->parent->funcList[i+1]);
@@ -534,7 +535,7 @@ void graphWidget::keyPressEvent(QKeyEvent* event) {
         break;
     case Qt::Key_Left:
         if(selFunc) {
-            if((i = selFunc->parent->getSubfunctionNumber(selFunc)) == 0) {
+            if((i = selFunc->parent->getSubfuncNumber(selFunc)) == 0) {
                 ui->transitionEditor->on_prependButton_released();
             } else {
                 changeSelection(selFunc->parent->funcList[i-1]);
@@ -545,7 +546,7 @@ void graphWidget::keyPressEvent(QKeyEvent* event) {
     case Qt::Key_Up:
         if(selFunc) {
             if(selFunc->parent->secParent->type == forced) {
-                i = selFunc->parent->getSubfunctionNumber(selFunc);
+                i = selFunc->parent->getSubfuncNumber(selFunc);
                 if(selFunc->parent->type == funcRoll) {
                     ok = changeSelection(i < selFunc->parent->secParent->normForce->funcList.size() ? selFunc->parent->secParent->normForce->funcList[i] : selFunc->parent->secParent->normForce->funcList.last());
                     if(!ok) ok = changeSelection(i < selFunc->parent->secParent->latForce->funcList.size() ? selFunc->parent->secParent->latForce->funcList[i] : selFunc->parent->secParent->latForce->funcList.last());
@@ -559,7 +560,7 @@ void graphWidget::keyPressEvent(QKeyEvent* event) {
                 if(!ok) changeSelection(oldFunc);
                 redrawGraphs();
             } else if(selFunc->parent->secParent->type == geometric) {
-                i = selFunc->parent->getSubfunctionNumber(selFunc);
+                i = selFunc->parent->getSubfuncNumber(selFunc);
                 if(selFunc->parent->type == funcRoll) {
                     ok = changeSelection(i < selFunc->parent->secParent->normForce->funcList.size() ? selFunc->parent->secParent->normForce->funcList[i] : selFunc->parent->secParent->normForce->funcList.last());
                     if(!ok) ok = changeSelection(i < selFunc->parent->secParent->latForce->funcList.size() ? selFunc->parent->secParent->latForce->funcList[i] : selFunc->parent->secParent->latForce->funcList.last());
@@ -579,7 +580,7 @@ void graphWidget::keyPressEvent(QKeyEvent* event) {
         if(selFunc)
         {
             if(selFunc->parent->secParent->type == forced) {
-                i = selFunc->parent->getSubfunctionNumber(selFunc);
+                i = selFunc->parent->getSubfuncNumber(selFunc);
                 if(selFunc->parent->type == funcRoll) {
                     ok = changeSelection(i < selFunc->parent->secParent->latForce->funcList.size() ? selFunc->parent->secParent->latForce->funcList[i] : selFunc->parent->secParent->latForce->funcList.last());
                     if(!ok) ok = changeSelection(i < selFunc->parent->secParent->normForce->funcList.size() ? selFunc->parent->secParent->normForce->funcList[i] : selFunc->parent->secParent->normForce->funcList.last());
@@ -593,7 +594,7 @@ void graphWidget::keyPressEvent(QKeyEvent* event) {
                 if(!ok) changeSelection(oldFunc);
                 redrawGraphs();
             } else if(selFunc->parent->secParent->type == geometric) {
-                i = selFunc->parent->getSubfunctionNumber(selFunc);
+                i = selFunc->parent->getSubfuncNumber(selFunc);
                 if(selFunc->parent->type == funcRoll) {
                     ok = changeSelection(i < selFunc->parent->secParent->latForce->funcList.size() ? selFunc->parent->secParent->latForce->funcList[i] : selFunc->parent->secParent->latForce->funcList.last());
                     if(!ok) ok = changeSelection(i < selFunc->parent->secParent->normForce->funcList.size() ? selFunc->parent->secParent->normForce->funcList[i] : selFunc->parent->secParent->normForce->funcList.last());

@@ -33,7 +33,7 @@ noLimitsImporter::noLimitsImporter(trackHandler* _track, QString _fileName)
 bool noLimitsImporter::importAsNlTrack()
 {
     fstream fin(fileName.toLocal8Bit().data(), ios::in | ios::binary);
-    if(fin == NULL)
+    if(!fin)
     {
         return false;
     }
@@ -234,7 +234,7 @@ bool noLimitsImporter::importAsNlTrack()
 bool noLimitsImporter::importAsTxt()
 {
     fstream fin(fileName.toLocal8Bit().data(), ios::in);
-    if(fin == NULL)
+    if(!fin)
     {
         return false;
     }

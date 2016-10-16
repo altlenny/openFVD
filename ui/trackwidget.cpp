@@ -344,6 +344,7 @@ void trackWidget::on_sectionListWidget_itemSelectionChanged()
             ui->optionsFrame->show();
             break;
         case bezier:
+        case nolimitscsv:
             ui->deleteButton->setEnabled(true);
             ui->anchorFrame->hide();
             ui->straightFrame->hide();

@@ -68,6 +68,9 @@ sectionHandler::sectionHandler(track* _track, enum secType _type, int _id)
     case anchor:
         listItem->setText(2, QString("Anchor"));
         break;
+    case nolimitscsv:
+        listItem->setText(2, QString("NoLimits CSV"));
+        break;
     }
 }
 

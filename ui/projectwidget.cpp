@@ -130,7 +130,8 @@ void projectWidget::on_addButton_released()
 
     menu->addAction("Empty Track", this, SLOT(newEmptyTrack()));
     menu->addAction("From other FVD Project", this, SLOT(importFromProject()));
-    menu->addAction("Import NL Track", this, SLOT(importNLTrack()));
+    menu->addAction("Import NoLimits 1 Track", this, SLOT(importNLTrack()));
+    menu->addAction("Import NoLimits 2 CSV", this, SLOT(importNoLimitsCSV()));
     menu->addAction("Import from Pointlist", this, SLOT(importPointList()));
 
     menu->popup(this->cursor().pos());
@@ -189,6 +190,33 @@ void projectWidget::importNLTrack()
         noLimitsImporter* importer = new noLimitsImporter(newTrack, fileName);
         importer->importAsNlTrack();
         delete importer;
+    }
+}
+
+void projectWidget::importNoLimitsCSV()
+{
+#ifdef Q_OS_MAC
+    QFileDialog fd(gloParent);
+    fd.setWindowTitle(tr("open NL2 CSV"));
+    fd.setNameFilter(tr("NL2 CSV(*.csv)"));
+    fd.setFileMode(QFileDialog::ExistingFile);
+    fd.setDirectory(QDir::currentPath());
+    fd.setWindowModality(Qt::WindowModal);
+    fd.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
+    if(!fd.exec()) return;
+    QString fileName = fd.selectedFiles().at(0);
+#else
+    QString fileName = QFileDialog::getOpenFileName(gloParent, "open NL2 CSV", "", "NL2 CSV(*.csv)");
+#endif
+
+    if(!fileName.isEmpty()) {
+        newEmptyTrack();
+        trackHandler* newTrack = trackList.back();
+
+        newTrack->trackData->fHeart = 0.0f;
+        newTrack->trackWidgetItem->addSection(nolimitscsv);
+
+        dynamic_cast<secnlcsv *>(newTrack->trackData->lSections[0])->loadTrack(fileName);
     }
 }
 
@@ -474,12 +502,14 @@ void projectWidget::on_trackListWidget_customContextMenuRequested(const QPoint &
     if(ui->trackListWidget->itemAt(pos) == NULL) {
         menu->addAction("New Empty Track", this, SLOT(newEmptyTrack()));
         menu->addAction("Import Track from Project", this, SLOT(importFromProject()));
-        menu->addAction("Import NL Track", this, SLOT(importNLTrack()));
+        menu->addAction("Import NoLimits 1 Track", this, SLOT(importNLTrack()));
+        menu->addAction("Import NoLimits 2 CSV", this, SLOT(importNoLimitsCSV()));
         menu->addAction("Import from Pointlist", this, SLOT(importPointList()));
     } else {
         menu->addAction("New Empty Track", this, SLOT(newEmptyTrack()));
         menu->addAction("Import Track from Project", this, SLOT(importFromProject()));
-        menu->addAction("Import NL Track", this, SLOT(importNLTrack()));
+        menu->addAction("Import NoLimits 1 Track", this, SLOT(importNLTrack()));
+        menu->addAction("Import NoLimits 2 CSV", this, SLOT(importNoLimitsCSV()));
         menu->addAction("Import from Pointlist", this, SLOT(importPointList()));
         if(selTrack != NULL) {
             menu->addAction("Edit Track", this, SLOT(on_editButton_released()));

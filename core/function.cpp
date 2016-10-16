@@ -22,7 +22,7 @@
 #include "exportfuncs.h"
 #include "lenassert.h"
 
-function::~function()
+func::~func()
 {
     while(funcList.size() != 0) {
         delete funcList.at(0);
@@ -30,20 +30,20 @@ function::~function()
     }
 }
 
-function::function(float min, float max, float start, float end, section* _parent, enum eFunctype newtype)
-    : activeSubfunction(-1), type(newtype), secParent(_parent), startValue(start)
+func::func(float min, float max, float start, float end, section* _parent, enum eFunctype newtype)
+    : activeSubfunc(-1), type(newtype), secParent(_parent), startValue(start)
 {
-    funcList.append(new subfunction(min, max, start, end-start, this));
+    funcList.append(new subfunc(min, max, start, end-start, this));
 }
 
-float function::getValue(float x)
+float func::getValue(float x)
 {
     int i = 0;
     /*while((i < funcList.size()-1 && x > funcList[i+1]->minArgument) || (i < funcList.size() && x > funcList[i]->maxArgument)) {
         i++;
     }*/
     const int s = funcList.size();
-    subfunction* cur = NULL;
+    subfunc* cur = NULL;
     for(; i < s; ++i) {
         cur = funcList[i];
         if(cur->maxArgument >= x) {
@@ -54,33 +54,33 @@ float function::getValue(float x)
     return cur->getValue(x);
 }
 
-void function::appendSubFunction(float length, int i)
+void func::appendSubFunction(float length, int i)
 {
     const int index = funcList.size();
-    subfunction *temp, *prev;
+    subfunc *temp, *prev;
     if(i == -1) {
         if(index == 0) {
-            temp = new subfunction(0.f, 1.f, startValue, 0.f, this);
+            temp = new subfunc(0.f, 1.f, startValue, 0.f, this);
         } else {
             prev = this->funcList.at(0);
-            temp = new subfunction(0.f, length, prev->startValue, 0.f, this);
+            temp = new subfunc(0.f, length, prev->startValue, 0.f, this);
         }
         this->funcList.prepend(temp);
-        activeSubfunction = index;
+        activeSubfunc = index;
     } else {
-        subfunction* pred = funcList[i];
-        this->funcList.insert(i+1, new subfunction(pred->maxArgument, pred->maxArgument+length, pred->endValue(), 0.f, this));
-        activeSubfunction = i+1;
+        subfunc* pred = funcList[i];
+        this->funcList.insert(i+1, new subfunc(pred->maxArgument, pred->maxArgument+length, pred->endValue(), 0.f, this));
+        activeSubfunc = i+1;
     }
     const int s = funcList.size();
     for(i = 1; i < s; ++i) {
-        subfunction* prev = funcList[i-1];
-        subfunction* cur = funcList[i];
+        subfunc* prev = funcList[i-1];
+        subfunc* cur = funcList[i];
         cur->update(prev->maxArgument, prev->maxArgument + cur->maxArgument - cur->minArgument, cur->symArg);
     }
 }
 
-void function::removeSubFunction(int i)
+void func::removeSubFunction(int i)
 {
     int index = this->funcList.size();
     lenAssert(index > 1);
@@ -91,33 +91,33 @@ void function::removeSubFunction(int i)
     delete funcList[i];
     this->funcList.removeAt(i);
 
-    subfunction* cur;
+    subfunc* cur;
     if(i == 0) { // removed from beginning
         cur = funcList[i];
         cur->update(0, cur->maxArgument - cur->minArgument, cur->symArg);
         ++i;
     }
     for(; i < funcList.size(); ++i) {
-        subfunction* prev = funcList[i-1];
+        subfunc* prev = funcList[i-1];
         cur = funcList[i];
         translateValues(prev);
         cur->update(prev->maxArgument, prev->maxArgument + cur->maxArgument - cur->minArgument, cur->symArg);
     }
 }
 
-void function::setMaxArgument(float newMax)
+void func::setMaxArgument(float newMax)
 {
     float scale = newMax/getMaxArgument();
     for(int i = 0; i < funcList.size(); i++) {
-        subfunction* cur = funcList[i];
+        subfunc* cur = funcList[i];
         cur->update(cur->minArgument*scale, cur->maxArgument*scale, cur->symArg);
     }
 }
 
-void function::translateValues(subfunction* caller)
+void func::translateValues(subfunc* caller)
 {
     int i = 0;
-    subfunction* prev, *cur;
+    subfunc* prev, *cur;
     while(i < funcList.size()) {
         cur = funcList[i++];
         if(cur == caller) break;
@@ -130,10 +130,10 @@ void function::translateValues(subfunction* caller)
     }
 }
 
-float function::changeLength(float newlength, int index)
+float func::changeLength(float newlength, int index)
 {
-    subfunction* cur = funcList[index];
-    subfunction* prev;
+    subfunc* cur = funcList[index];
+    subfunc* prev;
 
     cur->update(cur->minArgument, cur->minArgument+newlength, cur->symArg);
     for(++index; index < funcList.size(); ++index) {
@@ -148,7 +148,7 @@ float function::changeLength(float newlength, int index)
     return getMaxArgument();
 }
 
-void function::saveFunction(std::fstream& file)
+void func::saveFunction(std::fstream& file)
 {
     file << "FUNC";
     int size = funcList.size();
@@ -158,7 +158,7 @@ void function::saveFunction(std::fstream& file)
     }
 }
 
-void function::loadFunction(std::fstream& file)
+void func::loadFunction(std::fstream& file)
 {
     if(readString(&file, 4) != "FUNC") {
         lenAssert(0 && "Error Loading Function");
@@ -172,7 +172,7 @@ void function::loadFunction(std::fstream& file)
     }
 }
 
-void function::legacyLoadFunction(std::fstream& file)
+void func::legacyLoadFunction(std::fstream& file)
 {
     if(readString(&file, 4) != "FUNC") {
         lenAssert(0 && "Error Loading Function");
@@ -186,7 +186,7 @@ void function::legacyLoadFunction(std::fstream& file)
     }
 }
 
-void function::saveFunction(std::stringstream& file)
+void func::saveFunction(std::stringstream& file)
 {
     file << "FUNC";
     int size = funcList.size();
@@ -196,7 +196,7 @@ void function::saveFunction(std::stringstream& file)
     }
 }
 
-void function::loadFunction(std::stringstream& file)
+void func::loadFunction(std::stringstream& file)
 {
     if(readString(&file, 4) != "FUNC") {
         lenAssert(0 && "Error Loading Function");
@@ -210,33 +210,33 @@ void function::loadFunction(std::stringstream& file)
     }
 }
 
-int function::getSubfunctionNumber(subfunction *_sub)
+int func::getSubfuncNumber(subfunc *_sub)
 {
     int number = 0;
     while(funcList[number] != _sub && number < funcList.size()) ++number;
     if(number < funcList.size()) {
         return number;
     } else {
-        lenAssert(0 && "invalid subfunction");
+        lenAssert(0 && "invalid subfunc");
         return -1;
     }
 }
 
-bool function::unlock(int _id)
+bool func::unlock(int _id)
 {
     lenAssert(funcList[_id]->locked);
     funcList[_id]->locked = false;
     return true;
 }
 
-bool function::lock(int _id)
+bool func::lock(int _id)
 {
     lenAssert(!funcList[_id]->locked);
     funcList[_id]->locked = true;
     return true;
 }
 
-int function::lockedFunc()
+int func::lockedFunc()
 {
     for(int i = 0; i < funcList.size(); ++i) {
         if(funcList[i]->locked) return i;
@@ -244,10 +244,10 @@ int function::lockedFunc()
     return -1;
 }
 
-subfunction* function::getSubfunction(float x)
+subfunc* func::getSubfunc(float x)
 {
     int i = 0;
-    subfunction* cur = NULL;
+    subfunc* cur = NULL;
     const int s = funcList.size();
     for(; i < s; ++i) {
         cur = funcList[i];

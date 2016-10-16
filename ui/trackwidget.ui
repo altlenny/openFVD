@@ -338,7 +338,7 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="functionLabel">
+           <widget class="QLabel" name="funcLabel">
             <property name="font">
              <font>
               <pointsize>8</pointsize>

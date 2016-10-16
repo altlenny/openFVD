@@ -162,6 +162,10 @@ void glViewWidget::drawTrack(trackHandler *_track, bool toNormalMap)
 		shader = trackShader;
 	}
 
+    if(!_track->mMesh->isInit) {
+        _track->mMesh->init();
+    }
+
 	trackMesh* mesh = _track->mMesh;
 	track* myTrack = _track->trackData;
 
@@ -344,6 +348,10 @@ void glViewWidget::drawShadowVolumes()
 	{
 		if(trackList[i]->trackData->drawTrack)
 		{
+            if(!trackList[i]->mMesh->isInit) {
+                trackList[i]->mMesh->init();
+            }
+
 			trackMesh* mesh = trackList[i]->mMesh;
 			track* myTrack = trackList[i]->trackData;
 			anchorBase = glm::translate(myTrack->startPos) * glm::rotate(TO_RAD(myTrack->startYaw-90.f), glm::vec3(0.f, 1.f, 0.f));
@@ -448,8 +456,12 @@ void glViewWidget::drawOcclusion()
 	for(int i = 0; i < trackList.size(); ++i)
 	{
 		if(trackList[i]->trackData->drawTrack)
-		{
-			if(trackList[i]->trackData->hasChanged)
+        {
+            if(!trackList[i]->mMesh->isInit) {
+                trackList[i]->mMesh->init();
+            }
+
+            if(trackList[i]->trackData->hasChanged)
 			{
 				trackList[i]->mMesh->recolorTrack();
 				trackList[i]->trackData->hasChanged = false;

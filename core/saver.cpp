@@ -33,7 +33,7 @@ saver::saver(const QString& fileName, projectWidget* _project, QMainWindow* _par
 QString saver::doSave()
 {
     fstream fout(sFileName.toLocal8Bit().data(), ios::out | ios::binary);
-    if(fout == NULL) {
+    if(!fout) {
         return QString("Error: File is NULL");
     }
 
@@ -46,7 +46,7 @@ QString saver::doSave()
 QString saver::doLoad()
 {
     fstream fin(sFileName.toLocal8Bit().data(), ios::in | ios::binary);
-    if(fin == NULL) {
+    if(!fin) {
         return QString("Error: File is NULL");
     }
 

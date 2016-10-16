@@ -46,11 +46,11 @@ public:
     void activateGraph(graphHandler* curGraph);
     void deactivateGraph(graphHandler* curGraph);
     void redrawGraphs(bool otherArgument = false);
-    bool changeSelection(subfunction* _sel);
+    bool changeSelection(subfunc* _sel);
     void keyPressEvent(QKeyEvent* event);
 
     trackHandler* selTrack;
-    subfunction* selFunc;
+    subfunc* selFunc;
     transitionWidget* transitionHandler;
 
     QCPAxis* yAxes[4];

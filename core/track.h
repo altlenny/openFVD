@@ -25,6 +25,7 @@
 #include "secforced.h"
 #include "secgeometric.h"
 #include "secbezier.h"
+#include "secnlcsv.h"
 #include "sectionhandler.h"
 #include <QList>
 #include <fstream>

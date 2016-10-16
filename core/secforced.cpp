@@ -31,8 +31,8 @@ secforced::secforced(track* getParent, mnode* first, float gettime): section(get
     this->iTime = (int)(gettime+0.5);
     this->length = 0.0;
     rollFunc->changeLength(1.f, 0);
-	normForce = new function(0, 1, this->lNodes[0].forceNormal, this->lNodes[0].forceNormal, this, funcNormal);
-	latForce = new function(0, 1, this->lNodes[0].forceLateral, this->lNodes[0].forceLateral, this, funcLateral);
+	normForce = new func(0, 1, this->lNodes[0].forceNormal, this->lNodes[0].forceNormal, this, funcNormal);
+	latForce = new func(0, 1, this->lNodes[0].forceLateral, this->lNodes[0].forceLateral, this, funcLateral);
 
     this->bOrientation = QUATERNION;
     this->bArgument = TIME;
@@ -131,7 +131,7 @@ int secforced::updateSection(int node)
         curNode->fRollSpeed = 0.f;
         curNode->setRoll(rollFunc->getValue((i+1)/F_HZ)/F_HZ); // - rollFunc->getValue(i/1000.f));
         calcDirFromLast(i+1);
-        if(bOrientation == EULER || rollFunc->getSubfunction((i+1)/F_HZ)->degree == tozero) {
+        if(bOrientation == EULER || rollFunc->getSubfunc((i+1)/F_HZ)->degree == tozero) {
             curNode->setRoll(glm::dot(curNode->vDir, glm::vec3(0.f, -1.f, 0.f))*curNode->fYawFromLast);
             curNode->fRollSpeed += glm::dot(curNode->vDir, glm::vec3(0.f, -1.f, 0.f))*curNode->fYawFromLast*F_HZ;
         }
@@ -428,7 +428,7 @@ void secforced::loadSection(std::stringstream& file)
     latForce->loadFunction(file);
 }
 
-bool secforced::isInFunction(int index, subfunction* func)
+bool secforced::isInFunction(int index, subfunc* func)
 {
     if(func == NULL) return false;
     if(bArgument == DISTANCE) {
@@ -447,7 +447,7 @@ bool secforced::isInFunction(int index, subfunction* func)
     return false;
 }
 
-bool secforced::isLockable(function* _func)
+bool secforced::isLockable(func* _func)
 {
     if(_func == rollFunc) {
         if(normForce->lockedFunc() != -1 && latForce->lockedFunc() != -1) return false;
@@ -456,7 +456,7 @@ bool secforced::isLockable(function* _func)
     } else if(_func == latForce) {
         if(rollFunc->lockedFunc() != -1 && normForce->lockedFunc() != -1) return false;
     } else {
-        lenAssert(0 && "no such function");
+        lenAssert(0 && "no such func");
         return false;
     }
     return true;

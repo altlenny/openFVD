@@ -47,7 +47,7 @@ undoAction::undoAction(trackHandler* _track, eActionType _type)
                 && type != removeSegment && type != changeSegmentArgument && type != changeSegmentOrientation)
         {
             inFunction = hTrack->graphWidgetItem->selFunc->parent->type;
-            subfunctionNumber = hTrack->graphWidgetItem->selFunc->parent->getSubfunctionNumber(hTrack->graphWidgetItem->selFunc);
+            subfuncNumber = hTrack->graphWidgetItem->selFunc->parent->getSubfuncNumber(hTrack->graphWidgetItem->selFunc);
         }
     }
     nextAction = NULL;
@@ -88,19 +88,19 @@ void undoAction::doUndo()
         switch(inFunction)
         {
         case funcRoll:
-            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfunctionNumber]);
+            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfuncNumber]);
             break;
         case funcNormal:
-            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber]);
+            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber]);
             break;
         case funcLateral:
-            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber]);
+            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber]);
             break;
         case funcPitch:
-            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber]);
+            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber]);
             break;
         case funcYaw:
-            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber]);
+            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber]);
             break;
         default:
             break;
@@ -110,24 +110,24 @@ void undoAction::doUndo()
     {
         hTrack->trackWidgetItem->setSelection(sectionNumber);
         //parent->on_treeWidget_itemClicked(parent->getTopLevel(sectionNumber+1), 0);
-        if(subfunctionNumber > 0)
+        if(subfuncNumber > 0)
         {
             switch(inFunction)
             {
             case funcRoll:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfunctionNumber-1]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfuncNumber-1]);
                 break;
             case funcNormal:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber-1]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber-1]);
                 break;
             case funcLateral:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber-1]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber-1]);
                 break;
             case funcPitch:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber-1]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber-1]);
                 break;
             case funcYaw:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber-1]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber-1]);
                 break;
             default:
                 break;
@@ -138,19 +138,19 @@ void undoAction::doUndo()
             switch(inFunction)
             {
             case funcRoll:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfunctionNumber]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfuncNumber]);
                 break;
             case funcNormal:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber]);
                 break;
             case funcLateral:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber]);
                 break;
             case funcPitch:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber]);
                 break;
             case funcYaw:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber]);
                 break;
             default:
                 break;
@@ -183,7 +183,7 @@ void undoAction::doUndo()
     switch (type)
     {
     case onLengthSpin:
-        hTrack->graphWidgetItem->selFunc->parent->changeLength(fromValue.toDouble(), subfunctionNumber);
+        hTrack->graphWidgetItem->selFunc->parent->changeLength(fromValue.toDouble(), subfuncNumber);
         hTrack->graphWidgetItem->selectionChanged();
         inTrack->updateTrack(sectionNumber, (int)(hTrack->graphWidgetItem->selFunc->minArgument*F_HZ-1.5f));
         hTrack->graphWidgetItem->redrawGraphs();
@@ -222,7 +222,7 @@ void undoAction::doUndo()
         hTrack->graphWidgetItem->transitionHandler->on_removeButton_released();
         break;
     case removeSubFunction:
-        if(subfunctionNumber > 0)
+        if(subfuncNumber > 0)
         {
             hTrack->graphWidgetItem->transitionHandler->on_appendButton_released();
             hTrack->graphWidgetItem->selFunc->loadSubFunc(*info);
@@ -230,7 +230,7 @@ void undoAction::doUndo()
             info = new std::stringstream();
             hTrack->graphWidgetItem->selFunc->saveSubFunc(*info);
             info->seekp(0);
-            //parent->selectGraph(subfunctionNumber, inFunction);
+            //parent->selectGraph(subfuncNumber, inFunction);
         }
         else
         {
@@ -240,7 +240,7 @@ void undoAction::doUndo()
             info = new std::stringstream();
             hTrack->graphWidgetItem->selFunc->saveSubFunc(*info);
             info->seekp(0);
-            //parent->selectGraph(subfunctionNumber, inFunction);
+            //parent->selectGraph(subfuncNumber, inFunction);
         }
         hTrack->graphWidgetItem->selectionChanged();
         inTrack->updateTrack(sectionNumber, (int)(hTrack->graphWidgetItem->selFunc->minArgument*F_HZ-1.5f));
@@ -436,11 +436,11 @@ void undoAction::doUndo()
     case changeFunctionStatus:
         if(fromValue.toInt())
         {
-            hTrack->graphWidgetItem->selFunc->parent->lock(subfunctionNumber);
+            hTrack->graphWidgetItem->selFunc->parent->lock(subfuncNumber);
         }
         else
         {
-            hTrack->graphWidgetItem->selFunc->parent->unlock(subfunctionNumber);
+            hTrack->graphWidgetItem->selFunc->parent->unlock(subfuncNumber);
         }
         hTrack->graphWidgetItem->selectionChanged();
         inTrack->updateTrack(sectionNumber, (int)(hTrack->graphWidgetItem->selFunc->minArgument*F_HZ-1.5f)); // SIGSEGV because selFunc was NULL
@@ -468,19 +468,19 @@ void undoAction::doRedo()
         switch(inFunction)
         {
         case funcRoll:
-            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfunctionNumber]);
+            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfuncNumber]);
             break;
         case funcNormal:
-            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber]);
+            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber]);
             break;
         case funcLateral:
-            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber]);
+            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber]);
             break;
         case funcPitch:
-            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber]);
+            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber]);
             break;
         case funcYaw:
-            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber]);
+            hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber]);
             break;
         default:
             break;
@@ -490,24 +490,24 @@ void undoAction::doRedo()
     {
         hTrack->trackWidgetItem->setSelection(sectionNumber);
         //parent->on_treeWidget_itemClicked(parent->getTopLevel(sectionNumber+1), 0);
-        if(subfunctionNumber > 0)
+        if(subfuncNumber > 0)
         {
             switch(inFunction)
             {
             case funcRoll:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfunctionNumber-1]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfuncNumber-1]);
                 break;
             case funcNormal:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber-1]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber-1]);
                 break;
             case funcLateral:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber-1]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber-1]);
                 break;
             case funcPitch:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber-1]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber-1]);
                 break;
             case funcYaw:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber-1]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber-1]);
                 break;
             default:
                 break;
@@ -518,19 +518,19 @@ void undoAction::doRedo()
             switch(inFunction)
             {
             case funcRoll:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfunctionNumber]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->rollFunc->funcList[subfuncNumber]);
                 break;
             case funcNormal:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber]);
                 break;
             case funcLateral:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber]);
                 break;
             case funcPitch:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfunctionNumber]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->normForce->funcList[subfuncNumber]);
                 break;
             case funcYaw:
-                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfunctionNumber]);
+                hTrack->graphWidgetItem->changeSelection(inTrack->activeSection->latForce->funcList[subfuncNumber]);
                 break;
             default:
                 break;
@@ -561,7 +561,7 @@ void undoAction::doRedo()
     switch (type)
     {
     case onLengthSpin:
-        hTrack->graphWidgetItem->selFunc->parent->changeLength(toValue.toDouble(), subfunctionNumber);
+        hTrack->graphWidgetItem->selFunc->parent->changeLength(toValue.toDouble(), subfuncNumber);
         hTrack->graphWidgetItem->selectionChanged();
         inTrack->updateTrack(sectionNumber, (int)(hTrack->graphWidgetItem->selFunc->minArgument*F_HZ-1.5f));
         hTrack->graphWidgetItem->redrawGraphs();
@@ -597,7 +597,7 @@ void undoAction::doRedo()
         hTrack->graphWidgetItem->redrawGraphs();
         break;
     case appendSubFunction:
-        if(subfunctionNumber > 0)
+        if(subfuncNumber > 0)
         {
             hTrack->graphWidgetItem->transitionHandler->on_appendButton_released();
         }
@@ -785,11 +785,11 @@ void undoAction::doRedo()
     case changeFunctionStatus:
         if(toValue.toInt())
         {
-            hTrack->graphWidgetItem->selFunc->parent->lock(subfunctionNumber);
+            hTrack->graphWidgetItem->selFunc->parent->lock(subfuncNumber);
         }
         else
         {
-            hTrack->graphWidgetItem->selFunc->parent->unlock(subfunctionNumber);
+            hTrack->graphWidgetItem->selFunc->parent->unlock(subfuncNumber);
         }
         hTrack->graphWidgetItem->selectionChanged();
         inTrack->updateTrack(sectionNumber, (int)(hTrack->graphWidgetItem->selFunc->minArgument*F_HZ-1.5f));

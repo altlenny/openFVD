@@ -66,6 +66,8 @@ public slots:
 
     void importPointList();
 
+    void importNoLimitsCSV();
+
     void on_deleteButton_released();
 
     void on_texChooser_released();

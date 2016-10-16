@@ -32,8 +32,8 @@ secgeometric::secgeometric(track* getParent, mnode* first, float gettime): secti
     rollFunc->changeLength(1.f, 0);
 	float deltaPitch = lNodes[0].getPitchChange();
 	float deltaYaw = lNodes[0].getYawChange();
-    normForce = new function(0, 1, deltaPitch, deltaPitch, this, funcPitch);
-    latForce = new function(0, 1, deltaYaw, deltaYaw, this, funcYaw);
+    normForce = new func(0, 1, deltaPitch, deltaPitch, this, funcPitch);
+    latForce = new func(0, 1, deltaYaw, deltaYaw, this, funcYaw);
 
     this->bOrientation = EULER;
     this->bArgument = TIME;
@@ -153,7 +153,7 @@ int secgeometric::updateSection(int node)
 
         curNode->setRoll(rollFunc->getValue((i+1)/F_HZ)/F_HZ); //rollFunc->getValue((float)(i+1)/numNodes*fAngle)); //360./numNodes*(i+1));
 
-        if(bOrientation == EULER  || rollFunc->getSubfunction((i+1)/F_HZ)->degree == tozero) {
+        if(bOrientation == EULER  || rollFunc->getSubfunc((i+1)/F_HZ)->degree == tozero) {
             curNode->setRoll(+pureRollChange/F_HZ);
             artificialRoll += pureRollChange/F_HZ;
         }
@@ -173,7 +173,7 @@ int secgeometric::updateSection(int node)
         curNode->fTotalHeartLength = prevNode->fTotalHeartLength + curNode->fHeartDistFromLast;
         curNode->fRollSpeed = rollFunc->getValue((i+1)/F_HZ);
 
-        if(bOrientation == EULER  || rollFunc->getSubfunction((i+1)/F_HZ)->degree == tozero) {
+        if(bOrientation == EULER  || rollFunc->getSubfunc((i+1)/F_HZ)->degree == tozero) {
             curNode->fRollSpeed += pureRollChange;
         }
 
@@ -491,7 +491,7 @@ void secgeometric::loadSection(std::stringstream& file)
     latForce->loadFunction(file);
 }
 
-bool secgeometric::isInFunction(int index, subfunction* func)
+bool secgeometric::isInFunction(int index, subfunc* func)
 {
     if(func == NULL) return false;
     if(bArgument == DISTANCE) {
@@ -510,7 +510,7 @@ bool secgeometric::isInFunction(int index, subfunction* func)
     return false;
 }
 
-bool secgeometric::isLockable(function* _func)
+bool secgeometric::isLockable(func* _func)
 {
     if(_func == rollFunc) {
         if(normForce->lockedFunc() != -1 && latForce->lockedFunc() != -1) return false;
@@ -519,7 +519,7 @@ bool secgeometric::isLockable(function* _func)
     } else if(_func == latForce) {
         if(rollFunc->lockedFunc() != -1 && normForce->lockedFunc() != -1) return false;
     } else {
-        lenAssert(0 && "no such function");
+        lenAssert(0 && "no such func");
         return false;
     }
     return true;

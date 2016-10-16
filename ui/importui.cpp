@@ -42,8 +42,8 @@ importUi::importUi(QWidget *parent, QString _fileName) :
 #endif
 
     fstream fin(fileName.toLocal8Bit().data(), ios::in | ios::binary);
-    lenAssert(fin != NULL && "input stream NULL");
-    if(fin == NULL) {
+    //lenAssert(fin != NULL && "input stream NULL");
+    if(!fin) {
         return;
     }
 
@@ -90,8 +90,8 @@ importUi::~importUi()
 void importUi::on_buttonBox_accepted()
 {
     fstream fin(fileName.toLocal8Bit().data(), ios::in | ios::binary);
-    lenAssert(fin != NULL && "input stream NULL");
-    if(fin == NULL) {
+    //lenAssert(fin != NULL && "input stream NULL");
+    if(!fin) {
         return;
     }
 

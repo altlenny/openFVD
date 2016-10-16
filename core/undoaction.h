@@ -93,7 +93,7 @@ public:
     track* inTrack;
     int sectionNumber;
     eFunctype inFunction;
-    int subfunctionNumber;
+    int subfuncNumber;
 };
 
 #endif // UNDOACTION_H

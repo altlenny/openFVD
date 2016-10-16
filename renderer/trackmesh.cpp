@@ -26,6 +26,8 @@ extern glViewWidget* glView;
 
 trackMesh::trackMesh(track* parent)
 {
+    isInit = false;
+
     if(!glView->legacyMode)
     {
         glGenVertexArrays(5, TrackObject);
@@ -45,6 +47,23 @@ trackMesh::trackMesh(track* parent)
     railShadowSize = 0;
     trackData = parent;
 	isWireframe = false;
+}
+
+void trackMesh::init() {
+    if(!glView->legacyMode)
+    {
+        glGenVertexArrays(5, TrackObject);
+        glGenBuffers(7, TrackBuffer);
+        glGenBuffers(5, TrackIndices);
+        glGenVertexArrays(5, HeartObject);
+        glGenBuffers(5, HeartBuffer);
+        glGenBuffers(5, HeartIndices);
+        glGenVertexArrays(1, ShadowObject);
+        glGenBuffers(1, ShadowBuffer);
+    }
+
+    isInit = true;
+    buildMeshes(0);
 }
 
 trackMesh::~trackMesh()
@@ -159,6 +178,7 @@ int trackMesh::createPipes(QVector<tracknode_t> &list, QList<pipeoption_t> &opti
 				curNode = &curSection->lNodes[j];
 
                 nextNorm = -(float)(options[p].radius.y*cos(angle*F_PI/180))*curNode->vNorm+(float)(options[p].radius.x*sin(angle*F_PI/180))*curNode->vLatHeart(-options[p].offset.y);
+
                 nextPos = curNode->vRelPos(options[p].offset.y, options[p].offset.x)+nextNorm;
                 nextNode = trackData->getNumPoints(curSection) + j;
                 if(options[p].smooth)
@@ -1112,6 +1132,7 @@ int trackMesh::createShadowBox(QVector<meshnode_t> &list, glm::vec3 P1l, glm::ve
 void trackMesh::buildMeshes(int fromNode)
 {
     if(glView->legacyMode) return;
+
     //rails.clear();
     //crossties.clear();
     rendersupports.clear();
@@ -1268,7 +1289,7 @@ void trackMesh::buildMeshes(int fromNode)
             for(; j < curSection->lNodes.size(); ++j)
             {
                 if(i != 0 && j == 1) distFromLastNode = 1.f;
-				float angle = curSection->lNodes[(j)].fFlexion();
+                float angle = curSection->lNodes[(j)].fFlexion();
                 angle /= angleNodeDist;
                 angle = std::min(std::max(1.f/minNodeDist, angle), 1.f/maxNodeDist);
 				angle *= curSection->lNodes[(j)].fDistFromLast;;

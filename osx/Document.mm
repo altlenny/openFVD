@@ -34,7 +34,6 @@ extern "C" {
 
 - (NSString *)windowNibName
 {
-    return NO;
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController

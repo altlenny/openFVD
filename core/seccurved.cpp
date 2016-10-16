@@ -54,6 +54,11 @@ int seccurved::updateSection(int)
 
     fAngle = getMaxArgument();
 
+    while(lNodes.size() > 1) {
+        lNodes.removeAt(1);
+        lAngles.removeAt(1);
+    }
+
     int sizediff = lNodes.size() - lAngles.size();
     for(int i = 0; i <= sizediff; ++i) {
         lAngles.append(0.f);
@@ -94,13 +99,7 @@ int seccurved::updateSection(int)
             }
         }
 
-		fRiddenAngle += deltaAngle;
-		if(numNodes >= lNodes.size()) {
-			lNodes.append(*prevNode);
-			lAngles.append(fRiddenAngle);
-		} else {
-			lAngles[numNodes] = fRiddenAngle;
-		}
+        lNodes.append(*prevNode);
 
 		mnode* curNode = &lNodes[numNodes];
 		prevNode = &lNodes[numNodes-1]; // in case vector gets copied
@@ -109,6 +108,9 @@ int seccurved::updateSection(int)
             qWarning("train goes very slowly");
             break;
         }
+
+        fRiddenAngle += deltaAngle;
+        lAngles.append(fRiddenAngle);
 
         curNode->updateNorm();
 
@@ -121,9 +123,7 @@ int seccurved::updateSection(int)
 
         curNode->updateNorm();
 
-
         curNode->vPos += curNode->vDir*(curNode->fVel/(2.f*F_HZ)) + prevNode->vDir*(curNode->fVel/(2.f*F_HZ)) + (prevNode->vPosHeart(parent->fHeart) - curNode->vPosHeart(parent->fHeart));
-
 
         curNode->setRoll(rollFunc->getValue(fRiddenAngle)/F_HZ);
         curNode->fRollSpeed = rollFunc->getValue(fRiddenAngle);
@@ -150,10 +150,10 @@ int seccurved::updateSection(int)
 
 		curNode->updateRoll();
 
-		curNode->fDistFromLast = glm::distance(curNode->vPosHeart(parent->fHeart), prevNode->vPosHeart(parent->fHeart));
-		curNode->fTotalLength = prevNode->fTotalLength + curNode->fDistFromLast;
+        curNode->fDistFromLast = glm::distance(curNode->vPosHeart(parent->fHeart), prevNode->vPosHeart(parent->fHeart));
+        curNode->fTotalLength += curNode->fDistFromLast;
         curNode->fHeartDistFromLast = glm::distance(curNode->vPos, prevNode->vPos);
-		curNode->fTotalHeartLength = prevNode->fTotalHeartLength + curNode->fHeartDistFromLast;
+        curNode->fTotalHeartLength += curNode->fHeartDistFromLast;
 
         calcDirFromLast(numNodes);
 
@@ -176,11 +176,6 @@ int seccurved::updateSection(int)
 
         numNodes++;
     }
-
-	while(lNodes.size() > numNodes) {
-		lNodes.removeLast();
-		lAngles.removeLast();
-	}
 
     if(fLeadOut > 0.0001f) {
 		lNodes.last().fAngleFromLast = 0.f;
@@ -294,7 +289,7 @@ void seccurved::loadSection(std::stringstream& file)
     rollFunc->loadFunction(file);
 }
 
-bool seccurved::isInFunction(int index, subfunction* func)
+bool seccurved::isInFunction(int index, subfunc* func)
 {
     if(func == NULL) return false;
     float angle = lAngles[index];
@@ -304,7 +299,7 @@ bool seccurved::isInFunction(int index, subfunction* func)
     return false;
 }
 
-bool seccurved::isLockable(function* _func)
+bool seccurved::isLockable(func* _func)
 {
     Q_UNUSED(_func);
     return false;

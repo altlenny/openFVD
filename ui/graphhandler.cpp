@@ -265,7 +265,7 @@ void graphHandler::fillActiveGraphList(QCPAxis *xAxis, bool _argument, bool _dra
     QCPGraph* curGraph;
     track* curTrack = mTrack->trackData;
     QVector<double> x, y;
-    function* func;
+    func* func;
 
     double n = curTrack->getNumPoints(curTrack->activeSection)/F_HZ;
 
@@ -295,7 +295,7 @@ void graphHandler::fillActiveGraphList(QCPAxis *xAxis, bool _argument, bool _dra
         x.clear();
         y.clear();
 
-        subfunction* curFunc = func->funcList[i];
+        subfunc* curFunc = func->funcList[i];
 
         if(curFunc->locked) curFunc->getValue(-1.f); // make sure maxArg is right
 

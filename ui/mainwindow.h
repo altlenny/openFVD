@@ -109,7 +109,7 @@ public:
     void keyReleased(QEvent *event);
 
 
-    subfunction* selectedFunc;
+    subfunc* selectedFunc;
     QTreeWidgetItem* selectedSection;
     optionsMenu* mOptions;
     graphWidget* mGraphWidget;
