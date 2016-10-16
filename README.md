@@ -1,8 +1,8 @@
 ####################
-# open FVD++ v0.78 #
+# open FVD++ v0.79 #
 ####################
 
-Stephan (Lenny) Alt, 2012-2015, alt.stephan@web.de
+Stephan (Lenny) Alt, 2012-2016, alt.stephan@web.de
 
 #########
 # Intro #
@@ -15,6 +15,12 @@ That said the tool is still development and I take no warranty of its usefulness
 #############
 # Changelog #
 #############
+
+v0.79:
+- added nolimits 2 csv import
+- fixed renderer bugs when importing nl1 track or nl2 csv files on osx
+- fixed compilation errors on clang
+- reverted performance improvements due to fatal bugs
 
 v0.78:
 - fixed export of straight sections with non zero roll transitions
