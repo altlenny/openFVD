@@ -1,7 +1,7 @@
 #ifndef BEZRSEGMENT_H
 #define BEZRSEGMENT_H
 
-#include <core/nl.h>
+#include "nl.h"
 #include <QVector>
 
 #include "idlrlcomponent.h"
@@ -10,17 +10,14 @@ class BezrVertex;
 
 class Node {
 public:
-    // angles are maybe a vector3f
-    float xAngle;           // 0x0
-    float yAngle;           // 0x4
-    float zAngle;           // 0x8
+    float xAngle;
+    float yAngle;
+    float zAngle;
 
-    float distance;         // 0x10
+    float distance;
+    float roll;
 
-    // figure out which value is this, its an angle, but which one
-    float roll;             // 0xc
-
-    glm::mat4 matrix;       // 0x14 (pos: 0x14 + (0x30 (x: 0x30, y: 0x34, z: 0x38)))
+    glm::mat4 matrix;
 };
 
 class BezrSegment : public IDLRLComponent
@@ -45,13 +42,11 @@ public:
     double getRollOffset() const;
 
 private:
-    double rollOffset; // 0x18
-    float segmentLength; // 0x20
-    float segmentLengthNormalized; // 0x24
+    double rollOffset;
+    float segmentLength;
+    float segmentLengthNormalized;
 
-    // size: 0xc (not needed, we are using a vector)
-    // buffersize: 0x10 (0xc + 0x4) (not needed, we are using qvector)
-    QVector <Node*> nodes; // 0x14 (0xc + 0x8)
+    QVector <Node*> nodes;
 };
 
 #endif // BEZRSEGMENT_H

@@ -17,16 +17,14 @@ public:
     void setAnchor(int i);
     int size();
 
-    void debug();
     void insertAt(IDLRLComponent *component, int i, QString debugName);
     void insertAt(IDLRLComponent *component, int i);
 
     IDLRLComponent *at(int i);
 private:
-    bool connected; // 0x4
+    bool connected;
 
-    //int size 0x8
-    QVector<IDLRLComponent *> list; // 0x10
+    QVector<IDLRLComponent *> list;
 };
 
 #endif // DOUBLERINGLIST_H

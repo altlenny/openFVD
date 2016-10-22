@@ -1,8 +1,8 @@
 #include "bezrsegment.h"
-#include <QDebug>
 #include "bezrvertex.h"
-#include <core/core.h>
+
 #include <math.h>
+#include <QDebug>
 
 BezrSegment::BezrSegment() : IDLRLComponent() {
     nodes.clear();
@@ -135,7 +135,6 @@ void BezrSegment::notify() {
                 Node *item = new Node();
                 item->distance = segmentLength;
 
-                // implement: use matrix::translate()
                 item->matrix[0][3] = pos.x;
                 item->matrix[1][3] = pos.y;
                 item->matrix[2][3] = pos.z;
@@ -147,7 +146,6 @@ void BezrSegment::notify() {
         if(segmentLength > 0.0f)
             segmentLengthNormalized = 1 / segmentLength;
 
-        // implement: use matrix::translate()
         nodes.first()->matrix[0][3] = prevVertex->getPos().x;
         nodes.first()->matrix[1][3] = prevVertex->getPos().y;
         nodes.first()->matrix[2][3] = prevVertex->getPos().z;
@@ -271,8 +269,8 @@ glm::mat4 BezrSegment::getMatrixAtDist(float distance, float &roll, float &dista
 
     distanceInPercent = distance * segmentLengthNormalized;
 
-    Node *currentNode = nodes.at(pos); // ebx
-    Node *nextNode = nodes.at(pos + 1); // esi
+    Node *currentNode = nodes.at(pos);
+    Node *nextNode = nodes.at(pos + 1);
 
     float t = 0;
     float nodesDistanceDiff = nextNode->distance - currentNode->distance;

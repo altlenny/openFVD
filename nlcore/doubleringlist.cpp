@@ -1,7 +1,6 @@
 #include "doubleringlist.h"
 
-#include <track/bezrvertex.h>
-#include <typeinfo>
+#include "bezrvertex.h"
 
 DoubleRingList::DoubleRingList() {
     connected = false;
@@ -160,24 +159,4 @@ bool DoubleRingList::isConnected() {
 
 int DoubleRingList::size() {
     return list.size();
-}
-
-void DoubleRingList::debug() {
-    for(int i=0; i < list.size(); i++) {
-        qDebug() << "--------------------------------------";
-        //qDebug() << "Index: " << i;
-        qDebug() << "Name: " << list.at(i)->debugName;
-        qDebug() << "Next: " << (list.at(i)->getNext() ? list.at(i)->getNext()->debugName: "Empty");
-        qDebug() << "Prev: " << (list.at(i)->getPrev() ? list.at(i)->getPrev()->debugName: "Empty");
-
-        QString className = QString(typeid(*list.at(i)).name());
-        qDebug() << "ClassName:" << className;
-
-        if(className == "10BezrVertex") {
-            BezrVertex * v = dynamic_cast<BezrVertex*>(list.at(i));
-            v->debug();
-        }
-
-        qDebug() << "--------------------------------------";
-    }
 }

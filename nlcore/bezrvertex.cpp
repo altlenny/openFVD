@@ -1,10 +1,10 @@
 #include "bezrvertex.h"
 
 #include <QDebug>
-#include <core/nl.h>
+#include "nl.h"
 #include <limits>
 
-BezrVertex::BezrVertex(glm::vec3 _cp1, glm::vec3 _pos, glm::vec3 _cp2, double _roll) : PickObject("") {
+BezrVertex::BezrVertex(glm::vec3 _cp1, glm::vec3 _pos, glm::vec3 _cp2, double _roll) {
     cp1 = _cp1;
     pos = _pos;
     cp2 = _cp2;
@@ -283,14 +283,9 @@ glm::mat4 BezrVertex::computeMatrix() {
     NL::computeInitialMatrix(mat, cpDiff);
     NL::AzRotR(mat, roll);
 
-    // Here is something really really strange
-    // original translate method is right, but
-    // nl seems to have position on an irregular
-    // place of the matrix
     mat[0][3] = pos.x;
     mat[1][3] = pos.y;
     mat[2][3] = pos.z;
-    //mat = glm::translate(pos) * mat;
 
     return mat;
 }
