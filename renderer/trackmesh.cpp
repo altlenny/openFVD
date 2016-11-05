@@ -2584,7 +2584,6 @@ void trackMesh::build3ds(const int _sec, QVector<float> *_vertices, QVector<unsi
         meshQuality = 6;
         break;
     }
-    meshQuality = 2;
 
     float minNodeDist = 12.f/(meshQuality), maxNodeDist = 0.3f/(meshQuality);    // minimal and maximal distance between nodes
     float angleNodeDist = 6.f/(meshQuality);                     // after x degrees difference force a new node

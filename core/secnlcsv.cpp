@@ -12,7 +12,7 @@ int secnlcsv::updateSection(int node)
 {
     Q_UNUSED(node);
 
-    initDistanceMapping();
+    initDistances();
 
     while(lNodes.size() > 1) {
         lNodes.removeLast();
@@ -28,14 +28,15 @@ int secnlcsv::updateSection(int node)
 
     int numNode = 0;
 
-    float trackLength = length;
-    length = 0.0f;
+    float trackLength = csvNodes.last().fTotalLength;
 
     int totalNumOfNodes = floor(trackLength / nodeDist);
     nodeDist = trackLength / totalNumOfNodes;
 
+    length = 0.0f;
+
     for(int i=0; i <= totalNumOfNodes; i++) {
-        mnode node = getNodeAtDistance(i * nodeDist, trackLength);
+        mnode node = getNodeAtDistance(i * nodeDist);
 
         if(numNode) {
             lNodes.append(lNodes.back());
@@ -72,76 +73,66 @@ int secnlcsv::updateSection(int node)
     }
 }
 
-void secnlcsv::initDistanceMapping() {
-    length = 0.0f;
+void secnlcsv::initDistances() {
+    float len = 0.0f;
 
-    distanceMapping.clear();
-    distanceList.clear();
-
-    glm::vec3 lastPos;
+    glm::vec3 lastPos = csvNodes.first().vPos;
 
     for(int i=0; i < csvNodes.size(); i++) {
         glm::vec3 pos = csvNodes[i].vPos;
 
-        if(i) {
-            length += glm::distance(lastPos, pos);
-        }
-
-        distanceList.append(length);
-
-        int key = length;
-        if(!distanceMapping.contains(length)) {
-            distanceMapping[key] = i;
-        }
+        len += glm::distance(lastPos, pos);
+        csvNodes[i].fTotalLength = len;
 
         lastPos = pos;
     }
 }
 
-mnode secnlcsv::lerpNode(mnode *n1, mnode *n2, float t) {
-    mnode n3;
+mnode secnlcsv::getNodeAtDistance(float distance) {
 
-    n3.vPos = (1.0f - t) * n1->vPos + t * n2->vPos;
-    n3.vDir = (1.0f - t) * n1->vDir + t * n2->vDir;
-    n3.vLat = (1.0f - t) * n1->vLat + t * n2->vLat;
+    int left = 0;
+    int right = csvNodes.size() - 1;
+    float range;
+    int pos;
 
-    return n3;
-}
+    if(!csvNodes.size()) return mnode();
 
-mnode secnlcsv::getNodeAtDistance(float distance, float totalLength) {
-    if(distance >= totalLength)
-        return csvNodes.last();
+    while(distance >= csvNodes.at(left).fTotalLength && distance <= csvNodes.at(right).fTotalLength) {
+        range = csvNodes.at(right).fTotalLength - csvNodes.at(left).fTotalLength;
 
-    if(distance < 0.0f)
-        return csvNodes.first();
+        pos = left + (int)(((double)right - left) * (distance - csvNodes.at(left).fTotalLength) / range);
 
-    int startIndex = 0, endIndex = 0;
-
-    if(distanceMapping.contains((int) distance)) {
-        int index = distanceMapping[(int) distance];
-        if(distance >= distanceList[index]) {
-            for(int i=index; i < csvNodes.size(); i++) {
-                if(distanceList[i] > distance) {
-                    startIndex = i - 1;
-                    endIndex = i;
-                    break; // found one index before
-                }
-            }
-        } else {
-            for(int i=index; i >= 0; i--) {
-                if(distanceList[i] < distance) {
-                    startIndex = i;
-                    endIndex = i + 1;
-                    break; // found one index
-                }
-            }
-        }
-
-        float t = (1.0f * (distance - distanceList[startIndex])) / (distanceList[endIndex] - distanceList[startIndex]);
-        return lerpNode(&csvNodes[startIndex], &csvNodes[endIndex], t);
-    } else {
-        return mnode();
+        if(distance > csvNodes.at(pos).fTotalLength) left = pos + 1;
+        else if(distance < csvNodes.at(pos).fTotalLength) right = pos - 1;
+        else break;
     }
+
+    if(pos >= csvNodes.size() - 1) {
+        return csvNodes.last();
+    }
+
+    mnode currentNode = csvNodes.at(pos);
+    mnode nextNode = csvNodes.at(pos + 1);
+
+    float t = 0;
+    float nodesDistanceDiff = nextNode.fTotalLength - currentNode.fTotalLength;
+    float distanceDiff = distance - currentNode.fTotalLength;
+
+    if (nodesDistanceDiff > 0.001f) {
+        float ratio = distanceDiff / nodesDistanceDiff;
+
+        if (ratio < 0.0f) {
+            if (ratio != ratio) t = 0.0f;
+            else t = fmin(1.0f, ratio);
+        }
+        else t = fmin(1.0f, ratio);
+    } else t = 0.5f;
+
+    mnode resultNode;
+    resultNode.vPos = currentNode.vPos + ((nextNode.vPos - currentNode.vPos) * t);
+    resultNode.vDir = currentNode.vDir + ((nextNode.vDir - currentNode.vDir) * t);
+    resultNode.vLat = currentNode.vLat + ((nextNode.vLat - currentNode.vLat) * t);
+    return resultNode;
 }
 
 void secnlcsv::saveSection(fstream &file)

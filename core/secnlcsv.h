@@ -19,14 +19,10 @@ public:
     virtual bool isLockable(func* _func);
     virtual bool isInFunction(int index, subfunc* func);
     void loadTrack(QString filename);
-    mnode getNodeAtDistance(float distance, float totalLength);
 private:
-    QList<float> distanceList;
-    QMap<int, int> distanceMapping;
     QList<mnode> csvNodes;
-
-    void initDistanceMapping();
-    mnode lerpNode(mnode *n1, mnode *n2, float t);
+    void initDistances();
+    mnode getNodeAtDistance(float distance);
 };
 
 #endif // SECNLCSV_H
