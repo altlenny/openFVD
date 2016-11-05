@@ -89,7 +89,6 @@ void secnlcsv::initDistances() {
 }
 
 mnode secnlcsv::getNodeAtDistance(float distance) {
-
     int left = 0;
     int right = csvNodes.size() - 1;
     float range;
@@ -118,14 +117,8 @@ mnode secnlcsv::getNodeAtDistance(float distance) {
     float nodesDistanceDiff = nextNode.fTotalLength - currentNode.fTotalLength;
     float distanceDiff = distance - currentNode.fTotalLength;
 
-    if (nodesDistanceDiff > 0.001f) {
-        float ratio = distanceDiff / nodesDistanceDiff;
-
-        if (ratio < 0.0f) {
-            if (ratio != ratio) t = 0.0f;
-            else t = fmin(1.0f, ratio);
-        }
-        else t = fmin(1.0f, ratio);
+    if (nodesDistanceDiff > std::numeric_limits<float>::epsilon()) {
+        t = fmax(fmin(distanceDiff / nodesDistanceDiff, 1.0f), 0.0f);
     } else t = 0.5f;
 
     mnode resultNode;
