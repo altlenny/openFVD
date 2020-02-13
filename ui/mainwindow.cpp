@@ -233,24 +233,7 @@ void MainWindow::on_actionLoad_triggered()
     QString fileName;
 #endif
     glView->paintMode = false;
-#ifdef Q_OS_MAC
-    if(fileName.isEmpty()) {
-        QFileDialog fd((QWidget*)this);
-        fd.setWindowTitle("open FVD Data");
-        fd.setFileMode(QFileDialog::ExistingFile);
-        fd.setNameFilter(tr("FVD Data(*.fvd);;Backed Up FVD Data(*.bak)"));
-        fd.setDirectory(QDir::currentPath());
-        fd.setWindowModality(Qt::WindowModal);
-        fd.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
-        if(!fd.exec()) {
-            glView->paintMode = true;
-            return;
-        }
-        fileName = fd.selectedFiles().at(0);
-    }
-#else
-    fileName = QFileDialog::getOpenFileName(this, "open FVD Data", "", "FVD Data(*.fvd);;Backed Up FVD Data(*.bak)", 0, 0);
-#endif
+    fileName = QFileDialog::getOpenFileName(this, "Open FVD Data", "", "FVD Data(*.fvd);;Backed Up FVD Data(*.bak)", 0, 0);
 
     if(fileName.isEmpty()) {
         glView->paintMode = true;
@@ -324,20 +307,7 @@ void MainWindow::on_actionSave_As_triggered()
         return;
     }
 
-#ifdef Q_OS_MAC
-    QFileDialog fd(this);
-    fd.setWindowTitle(tr("Save File"));
-    fd.setNameFilter(tr("FVD Data(*.fvd)"));
-    fd.setAcceptMode(QFileDialog::AcceptSave);
-    fd.selectFile(currentFileName.length()?currentFileName:"Untitled");
-    fd.setDirectory("");
-    fd.setWindowModality(Qt::WindowModal);
-    fd.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
-    if(!fd.exec()) return;
-    QString fileName = fd.selectedFiles().at(0);
-#else
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("FVD Data (*.fvd)"));
-#endif
+    QString fileName = QFileDialog::getSaveFileName(this, "Save File", "Untitled", "FVD Data (*.fvd)");
 
     if(!fileName.endsWith(".fvd") && !fileName.isEmpty()) {
         fileName.append(".fvd");
