@@ -33,6 +33,7 @@
     #include "GL/glu.h"
 #endif
 
+#include <glm/glm.hpp>
 #include <QtGlobal>
 #include <QGLWidget>
 #include "track.h"

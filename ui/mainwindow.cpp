@@ -113,14 +113,6 @@ MainWindow::MainWindow(QWidget *parent) :
     mObjectExporter = new objectExporter(this);
     mObjectExporter->setWindowFlags(exportScreen->windowFlags());
 
-#ifdef Q_OS_MAC
-    exportScreen->setWindowModality(Qt::WindowModal);
-    exportScreen->setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
-
-    mObjectExporter->setWindowModality(Qt::WindowModal);
-    mObjectExporter->setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
-#endif
-
     setUndoButtons();
     undoChanges = false;
 
@@ -204,10 +196,6 @@ void MainWindow::loadProject(QString fileName)
         mb.setText(output);
         mb.setIcon(QMessageBox::Warning);
         mb.setDefaultButton(QMessageBox::Ok);
-#ifdef Q_OS_MAC
-        mb.setWindowModality(Qt::WindowModal);
-        mb.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
-#endif
         mb.exec();
 
         if(output.contains("Warning:")) currentFileName = fileName;
@@ -233,24 +221,7 @@ void MainWindow::on_actionLoad_triggered()
     QString fileName;
 #endif
     glView->paintMode = false;
-#ifdef Q_OS_MAC
-    if(fileName.isEmpty()) {
-        QFileDialog fd((QWidget*)this);
-        fd.setWindowTitle("open FVD Data");
-        fd.setFileMode(QFileDialog::ExistingFile);
-        fd.setNameFilter(tr("FVD Data(*.fvd);;Backed Up FVD Data(*.bak)"));
-        fd.setDirectory(QDir::currentPath());
-        fd.setWindowModality(Qt::WindowModal);
-        fd.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
-        if(!fd.exec()) {
-            glView->paintMode = true;
-            return;
-        }
-        fileName = fd.selectedFiles().at(0);
-    }
-#else
     fileName = QFileDialog::getOpenFileName(this, "open FVD Data", "", "FVD Data(*.fvd);;Backed Up FVD Data(*.bak)", 0, 0);
-#endif
 
     if(fileName.isEmpty()) {
         glView->paintMode = true;
@@ -268,10 +239,6 @@ void MainWindow::on_actionLoad_triggered()
         mb.setText(output);
         mb.setIcon(QMessageBox::Warning);
         mb.setDefaultButton(QMessageBox::Ok);
-#ifdef Q_OS_MAC
-        mb.setWindowModality(Qt::WindowModal);
-        mb.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
-#endif
         mb.exec();
 
         if(output.contains("Warning:")) currentFileName = fileName;
@@ -323,21 +290,7 @@ void MainWindow::on_actionSave_As_triggered()
     if(glView->moveMode) {
         return;
     }
-
-#ifdef Q_OS_MAC
-    QFileDialog fd(this);
-    fd.setWindowTitle(tr("Save File"));
-    fd.setNameFilter(tr("FVD Data(*.fvd)"));
-    fd.setAcceptMode(QFileDialog::AcceptSave);
-    fd.selectFile(currentFileName.length()?currentFileName:"Untitled");
-    fd.setDirectory("");
-    fd.setWindowModality(Qt::WindowModal);
-    fd.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
-    if(!fd.exec()) return;
-    QString fileName = fd.selectedFiles().at(0);
-#else
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("FVD Data (*.fvd)"));
-#endif
 
     if(!fileName.endsWith(".fvd") && !fileName.isEmpty()) {
         fileName.append(".fvd");
@@ -373,10 +326,6 @@ bool MainWindow::areYouSure()
 {
     QMessageBox mb(this);
     mb.setIcon(QMessageBox::Warning);
-#ifdef Q_OS_MAC
-    mb.setWindowModality(Qt::WindowModal);
-    mb.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
-#endif
     mb.setText(tr("Are you sure you want to quit?"));
     mb.setWindowTitle(tr("Application"));
     mb.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
