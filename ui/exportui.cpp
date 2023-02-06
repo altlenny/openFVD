@@ -234,23 +234,6 @@ void exportUi::doFastExport()
 
 void exportUi::on_buttonBox_accepted()
 {
-#ifdef Q_OS_MAC
-    QFileDialog fd(gloParent);
-    fd.setWindowTitle(tr("Save File"));
-    if(ui->exportTypeBox->currentIndex() == 0) {
-        fd.setNameFilter(tr("NL Element (*.nl2elem)"));
-    } else {
-        fd.setNameFilter(tr("NL Element (*.nlelem)"));
-    }
-    fd.setAcceptMode(QFileDialog::AcceptSave);
-    fd.selectFile(gloParent->getCurrentFileName().length()?gloParent->getCurrentFileName().replace(".fvd", ""):"Untitled");
-    fd.setDirectory("");
-    fd.setWindowModality(Qt::WindowModal);
-    fd.setWindowFlags((windowFlags() & ~Qt::WindowType_Mask) | Qt::Sheet);
-    if(!fd.exec()) return;
-
-    fileName = fd.selectedFiles().at(0);
-#else
     QString filter;
     if(ui->exportTypeBox->currentIndex() == 0) {
         filter = QString("NL Element (*.nl2elem)");
@@ -258,8 +241,6 @@ void exportUi::on_buttonBox_accepted()
         filter = QString("NL Element (*.nlelem)");
     }
     fileName = QFileDialog::getSaveFileName(gloParent, "Save File", ".", filter, 0, 0);
-#endif
-
 
     switch(ui->exportTypeBox->currentIndex()) {
     case 0:
